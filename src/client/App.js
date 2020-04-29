@@ -1,39 +1,25 @@
 import React, { Component } from "react";
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:3000";
+import { Switch, Route } from "react-router-dom";
+import MainPage from "./MainPage";
+import Messaging from "./Messaging/Messaging";
 
 export default class App extends Component {
-  constructor() {
-    super();
-    this.socket = socketIOClient(ENDPOINT);
-    this.state = {
-      online: null,
-    };
-  }
-  componentDidMount() {
-    this.socket.emit("connection");
-    this.socket.on(
-      "FromAPI",
-      (data) => {
-        this.setState({
-          online: data,
-        });
-      },
-      []
-    );
-  }
-  componentWillUnmount() {
-    this.socket.off();
-  }
   render() {
     return (
-      <div>
-        {this.state.online !== null ? (
-          this.state.online
-        ) : (
-          <p>Not Connected Yet</p>
-        )}
-      </div>
+      <>
+        <div className="header">
+          <div className="logo">
+            <div className="logo-text">SENDER</div>
+          </div>
+        </div>
+        <Switch>
+          <Route exact path="/" render={(props) => <MainPage {...props} />} />
+          <Route
+            path="/messaging"
+            render={(props) => <Messaging {...props} />}
+          />
+        </Switch>
+      </>
     );
   }
 }
