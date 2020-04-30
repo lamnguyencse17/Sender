@@ -40,7 +40,6 @@ io.on("connection", (socket) => {
 server.listen(SERVER_PORT, () =>
   console.log(`Server running on port ${SERVER_PORT}`)
 );
-let counter = 1;
 var mockData = {
   id1: "Hello 1",
   id2: "Hello 2",

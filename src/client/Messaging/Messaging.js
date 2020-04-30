@@ -1,11 +1,11 @@
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import TextInput from "./TextInput";
 import ChatLog from "./ChatLog";
 import ActiveBar from "./ActiveBar";
 
 const ENDPOINT = "http://127.0.0.1:3000";
-export default class Messaging extends PureComponent {
+export default class Messaging extends Component {
   constructor() {
     super();
     this.socket = socketIOClient(ENDPOINT, {
@@ -66,6 +66,9 @@ export default class Messaging extends PureComponent {
   componentWillUnmount() {
     this.socket.disconnect();
   }
+  shouldComponentUpdate(nextProps, nextStates) {
+    return true;
+  }
   updateText = (event) => {
     this.setState({ ...this.state, typing: event.target.value });
   };
@@ -103,7 +106,7 @@ export default class Messaging extends PureComponent {
           {Object.keys(this.state.room).length !== 0 &&
           this.state.room.constructor === Object ? (
             <ActiveBar
-              room={this.state.room}
+              room={Object.keys(this.state.room)}
               setActiveTab={this.setActiveTab}
             />
           ) : (

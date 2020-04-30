@@ -84,12 +84,14 @@ body {
   position: absolute;
   top: 91%;
   margin: 0% 2% 0% 2%;
-  width: 72%;
+  width: 80%;
 }
 
 .chat-log {
   height: 85%;
   margin: 2%;
+  display: flex;
+  flex-flow: column wrap;
 }
 
 .chat-widget {
@@ -98,14 +100,31 @@ body {
   border-style: solid;
 }
 
-.chat-message {
+.chat-message-sender {
   font-family: "Baloo Tamma 2", cursive;
-  color: #373934;
   font-size: 2rem;
-  background-color: #fff;
   border-radius: 1rem;
   padding-left: 1%;
   padding-right: 2%;
-  display: inline-block;
+  margin-right: 20%;
   height: auto;
+  align-self: flex-start;
+  background-color: #f8c260;
+  color: #373934;
+  margin-bottom: 1%;
+}
+
+.chat-message-recipient {
+  font-family: "Baloo Tamma 2", cursive;
+  color: #373934;
+  font-size: 2rem;
+  border-radius: 1rem;
+  padding-left: 1%;
+  padding-right: 2%;
+  margin-left: 20%;
+  height: auto;
+  margin-bottom: 1rem;
+  align-self: flex-end;
+  background-color: #fff;
+  margin-bottom: 1%;
 }

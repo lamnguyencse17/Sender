@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 export default class ActiveBar extends Component {
@@ -7,20 +6,33 @@ export default class ActiveBar extends Component {
     super(props);
     let indexDict = {};
     let index = 0;
-    Object.keys(this.props.room).forEach((key) => {
-      indexDict[index] = key;
+    this.props.room.forEach((value) => {
+      indexDict[index] = value;
       index = index + 1;
     });
+    // Object.keys(this.props.room).forEach((key) => {
+    //   indexDict[index] = key;
+    //   index = index + 1;
+    // });
     this.state = {
       value: 0,
       indexDict,
     };
   }
   handleChange = (event, value) => {
-    console.log(this.state.indexDict[value]);
     this.setState({ ...this.state, value: value });
     this.props.setActiveTab(this.state.indexDict[value]);
   };
+  shouldComponentUpdate(nextProps, nextState) {
+    let props = Object.keys(nextProps.room).sort();
+    let state = Object.values(nextState.indexDict).sort();
+    if (!props.toString() == state.toString()) {
+      return false;
+    } else if (nextProps.room.sort().toString() == state.toString()) {
+      return false;
+    }
+    return true;
+  }
   render() {
     return (
       <Tabs
@@ -30,17 +42,17 @@ export default class ActiveBar extends Component {
         onChange={this.handleChange}
         aria-label="Vertical tabs example"
       >
-        {Object.keys(this.props.room).map((index) => {
-          return <Tab key={index} label={index} {...a11yProps(index)} />;
+        {this.props.room.map((value) => {
+          return (
+            <Tab
+              key={value}
+              label={value}
+              id={`vertical-tab-${value}`}
+              aria-controls={`vertical-tabpanel-${value}`}
+            />
+          );
         })}
       </Tabs>
     );
   }
-}
-
-function a11yProps(index) {
-  return {
-    id: `vertical-tab-${index}`,
-    "aria-controls": `vertical-tabpanel-${index}`,
-  };
 }
