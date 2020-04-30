@@ -71,6 +71,7 @@ body {
   background-color: #fff;
   height: 100%;
   width: 15%;
+  overflow: auto;
 }
 
 .message-area {
@@ -89,4 +90,10 @@ body {
 .chat-log {
   height: 85%;
   margin: 2%;
+}
+
+.chat-widget {
+  height: 10%;
+  border: 0.05rem;
+  border-style: solid;
 }

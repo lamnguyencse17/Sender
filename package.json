@@ -4,7 +4,7 @@
   "description": "A Cloud Music Player",
   "main": "index.js",
   "scripts": {
-    "be": "nodemon --exec babel-node src/server/server.js",
+    "be": "nodemon --exec babel-node src/server/server.js --ignore 'src/client/*'",
     "fe": "webpack-dev-server --mode development"
   },
   "repository": {
