@@ -14,13 +14,18 @@ io.on("connection", (socket) => {
   mockRoom.map((room) => {
     socket.join(room);
   });
+  socket.on("error", function (err) {
+    console.log("Socket.IO Error");
+    console.log(err.stack); // this is changed from your code in last comment
+  });
+  socket.emit("subscribed-to", mockRoom);
   if (interval) {
     clearInterval(interval);
   }
   socket.on("client-sending-message", (message) => {
     io.sockets.in(message.room).emit("incoming-message", message.content);
   });
-  let interval = setInterval(() => getApiAndEmit(socket), Math.random() * 5000);
+  let interval = setInterval(() => getApiAndEmit(socket), Math.random() * 1000);
   socket.on("disconnect", () => {
     console.log("Client disconnected");
     socket.leaveAll();
@@ -29,11 +34,20 @@ io.on("connection", (socket) => {
 });
 
 const getApiAndEmit = (socket) => {
-  const response = new Date();
   if (counter > 4) {
     socket.emit("End", "Ended Mock");
+    return;
   }
-  socket.emit("FromAPI", mockData[`id${counter}`]);
+  console.log({
+    room: "everyone",
+    id: `id${counter}`,
+    message: mockData[`id${counter}`],
+  });
+  socket.emit("FromAPI", {
+    room: "everyone",
+    id: `id${counter}`,
+    message: mockData[`id${counter}`],
+  });
   counter = counter + 1;
 };
 

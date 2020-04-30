@@ -5,7 +5,7 @@ export default class TextInput extends PureComponent {
   checkKey = (event) => {
     if (event.key == "Enter") {
       event.preventDefault();
-      this.props.sendMessage("everyone");
+      this.props.sendMessage();
     }
   };
   render() {
