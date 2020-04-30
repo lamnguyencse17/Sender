@@ -19,37 +19,23 @@ io.on("connection", (socket) => {
     console.log(err.stack); // this is changed from your code in last comment
   });
   socket.emit("subscribed-to", mockRoom);
-  if (interval) {
-    clearInterval(interval);
-  }
   socket.on("client-sending-message", (message) => {
-    io.sockets.in(message.room).emit("incoming-message", message.content);
+    io.sockets.in(message.room).emit("incoming-message", message);
   });
-  let interval = setInterval(() => getApiAndEmit(socket), Math.random() * 1000);
   socket.on("disconnect", () => {
-    console.log("Client disconnected");
     socket.leaveAll();
-    clearInterval(interval);
+    if (socket.disconnected) {
+      console.log("Client disconnected");
+    }
+  });
+  Object.keys(mockData).forEach((index) => {
+    socket.emit("FromAPI", {
+      room: "everyone",
+      id: index,
+      message: mockData[index],
+    });
   });
 });
-
-const getApiAndEmit = (socket) => {
-  if (counter > 4) {
-    socket.emit("End", "Ended Mock");
-    return;
-  }
-  console.log({
-    room: "everyone",
-    id: `id${counter}`,
-    message: mockData[`id${counter}`],
-  });
-  socket.emit("FromAPI", {
-    room: "everyone",
-    id: `id${counter}`,
-    message: mockData[`id${counter}`],
-  });
-  counter = counter + 1;
-};
 
 server.listen(SERVER_PORT, () =>
   console.log(`Server running on port ${SERVER_PORT}`)
