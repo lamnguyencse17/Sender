@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import messageSchema from "./messages";
+import { messageSchema } from "./messages";
 
 const Rooms = mongoose.Schema;
 const ObjectId = mongoose.Schema.Types.ObjectId;
@@ -10,4 +10,5 @@ export const roomSchema = new Rooms({
   messages: [messageSchema],
 });
 
-export default roomModel = mongoose.model("Room", roomSchema);
+const roomModel = mongoose.model("Room", roomSchema);
+export default roomModel;

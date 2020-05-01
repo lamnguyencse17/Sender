@@ -7,7 +7,7 @@ export const messageSchema = new Messages({
   message: String,
   owner: ObjectId,
   room: ObjectId,
-  date: Date,
+  date: { type: Date, default: Date.now },
 });
-
-export default messageModel = mongoose.model("Room", messageSchema);
+const messageModel = mongoose.model("Message", messageSchema);
+export default messageModel;

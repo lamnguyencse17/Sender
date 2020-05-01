@@ -2,6 +2,12 @@ import http from "http";
 import express from "express";
 import socketio from "socket.io";
 import cors from "cors";
+import mongoose from "mongoose";
+import messageModel from "./models/messages";
+import roomModel from "./models/rooms";
+import userModel from "./models/users";
+
+mongoose.connect("mongodb://localhost:27017/Sender", { useNewUrlParser: true });
 
 const SERVER_PORT = 3000;
 const app = express();
@@ -20,7 +26,54 @@ io.on("connection", (socket) => {
   });
   socket.emit("subscribed-to", mockRoom);
   socket.on("client-sending-message", (message) => {
+    console.log("RECEIVING NEW MESSAGE");
     io.sockets.in(message.room).emit("incoming-message", message);
+    let newMessage = new messageModel({
+      message: message.message,
+      owner: mongoose.Types.ObjectId("5eabfa02f209780629cd9dfe"),
+      room: mongoose.Types.ObjectId("5eabfa02f209780629cd9dff"),
+    });
+    newMessage.save((err, product) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      // TODO: REMOVE FROM SUBDOCUMENT EXCESS INFO + TRANSFER THIS TO SOMEWHERE ELSE PLEASE
+      roomModel.update(
+        {
+          _id: mongoose.Types.ObjectId(product.room),
+        },
+        {
+          $push: {
+            messages: product,
+          },
+        },
+        (err, any) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          console.log("ROOM UPDATE SUCCESSFULLY");
+        }
+      );
+      userModel.update(
+        {
+          _id: mongoose.Types.ObjectId(product.owner),
+        },
+        {
+          $push: {
+            messages: product,
+          },
+        },
+        (err, any) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          console.log("USER UPDATE SUCCESSFULLY");
+        }
+      );
+    });
   });
   socket.on("disconnect", () => {
     socket.leaveAll();
