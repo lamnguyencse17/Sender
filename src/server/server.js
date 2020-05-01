@@ -15,64 +15,31 @@ app.use(cors());
 const server = http.createServer(app);
 const io = socketio(server);
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   console.log(`New client connected ${socket.handshake.query["id"]}`);
-  mockRoom.map((room) => {
-    socket.join(room);
-  });
+  let rooms = await roomModel.getSubscribedRoom();
+  for (let room in rooms) {
+    let id = rooms[room];
+    socket.join(id);
+  }
   socket.on("error", function (err) {
     console.log("Socket.IO Error");
     console.log(err.stack); // this is changed from your code in last comment
   });
-  socket.emit("subscribed-to", mockRoom);
+  socket.emit("subscribed-to", rooms);
   socket.on("client-sending-message", (message) => {
-    console.log("RECEIVING NEW MESSAGE");
+    console.log(message);
     io.sockets.in(message.room).emit("incoming-message", message);
     let newMessage = new messageModel({
       message: message.message,
-      owner: mongoose.Types.ObjectId("5eabfa02f209780629cd9dfe"),
-      room: mongoose.Types.ObjectId("5eabfa02f209780629cd9dff"),
+      owner: mongoose.Types.ObjectId(message.owner),
+      room: mongoose.Types.ObjectId("5eabfa02f209780629cd9dff"), //room goes herre later
     });
-    newMessage.save((err, product) => {
+    newMessage.save((err) => {
       if (err) {
         console.log(err);
         return;
       }
-      // TODO: REMOVE FROM SUBDOCUMENT EXCESS INFO + TRANSFER THIS TO SOMEWHERE ELSE PLEASE
-      roomModel.update(
-        {
-          _id: mongoose.Types.ObjectId(product.room),
-        },
-        {
-          $push: {
-            messages: product,
-          },
-        },
-        (err, any) => {
-          if (err) {
-            console.log(err);
-            return;
-          }
-          console.log("ROOM UPDATE SUCCESSFULLY");
-        }
-      );
-      userModel.update(
-        {
-          _id: mongoose.Types.ObjectId(product.owner),
-        },
-        {
-          $push: {
-            messages: product,
-          },
-        },
-        (err, any) => {
-          if (err) {
-            console.log(err);
-            return;
-          }
-          console.log("USER UPDATE SUCCESSFULLY");
-        }
-      );
     });
   });
   socket.on("disconnect", () => {
@@ -83,9 +50,11 @@ io.on("connection", (socket) => {
   });
   Object.keys(mockData).forEach((index) => {
     socket.emit("FromAPI", {
-      room: "everyone",
+      room: "5eabfa02f209780629cd9dff",
       id: index,
       message: mockData[index],
+      owner: "5eabfa02f209780629cd9dfe",
+      date: Date.now(),
     });
   });
 });
@@ -99,5 +68,3 @@ var mockData = {
   id3: "Hello 3",
   id4: "Hello 4",
 };
-
-var mockRoom = ["everyone", "family", "exs"];

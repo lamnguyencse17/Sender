@@ -17,28 +17,45 @@ export default class Messaging extends Component {
       history: [],
       room: {},
       activeTab: null,
+      indexDict: {},
     };
   }
   componentDidMount() {
     this.socket.on("subscribed-to", (room) => {
-      let defaultRoom = room[0];
-      room = room.reduce((a, b) => ((a[b] = {}), a), {});
+      let defaultRoom = Object.keys(room)[0];
+      let newRoom = {};
+      for (let key in room) {
+        newRoom[key] = { id: room[key], messages: {} };
+      }
       this.setState({
         ...this.state,
         activeTab: defaultRoom,
-        room: { ...this.state.room, ...room },
+        room: { ...this.state.room, ...newRoom },
       });
     });
     this.socket.on(
       "FromAPI",
       (data) => {
+        let target = null;
+        for (let room in this.state.room) {
+          if (data.room == this.state.room[room].id) {
+            target = room;
+          }
+        }
         this.setState({
           ...this.state,
           room: {
             ...this.state.room,
-            [data.room]: {
-              ...this.state.room[data.room],
-              [data.id]: data.message,
+            [target]: {
+              ...this.state.room[target],
+              messages: {
+                ...this.state.room[target].messages,
+                [data.id]: {
+                  message: data.message,
+                  owner: data.owner,
+                  date: data.date,
+                },
+              },
             },
           },
         });
@@ -51,13 +68,26 @@ export default class Messaging extends Component {
       // console.log("END");
     });
     this.socket.on("incoming-message", (data) => {
+      let target = null;
+      for (let room in this.state.room) {
+        if (data.room == this.state.room[room].id) {
+          target = room;
+        }
+      }
       this.setState({
         ...this.state,
         room: {
           ...this.state.room,
-          [data.room]: {
-            ...this.state.room[data.room],
-            [data.id]: data.message,
+          [target]: {
+            ...this.state.room[target],
+            messages: {
+              ...this.state.room[target].messages,
+              [data.id]: {
+                message: data.message,
+                owner: data.owner,
+                date: data.date,
+              },
+            },
           },
         },
       });
@@ -73,24 +103,26 @@ export default class Messaging extends Component {
     this.setState({ ...this.state, typing: event.target.value });
   };
   sendMessage = (inputValue) => {
-    console.log(inputValue);
     if (inputValue.length > 0) {
       this.socket.emit("client-sending-message", {
-        id: Math.random(),
-        room: this.state.activeTab,
+        room: this.state.room[this.state.activeTab].id,
         message: inputValue,
+        owner: "5eabfa02f209780629cd9dfe",
       });
     }
   };
   setActiveTab = (value) => {
-    this.setState({ ...this.state, activeTab: value });
+    this.setState({
+      ...this.state,
+      activeTab: Object.keys(this.state.room)[value],
+    });
   };
   render() {
     return (
       <div className="messaging-div">
         <div className="message-area">
           {this.state.room.hasOwnProperty(this.state.activeTab) ? (
-            <ChatLog log={this.state.room[this.state.activeTab]} />
+            <ChatLog log={this.state.room[this.state.activeTab].messages} />
           ) : (
             <></>
           )}

@@ -7,7 +7,9 @@ export default class ChatLog extends PureComponent {
         {Object.keys(this.props.log).map((index) => {
           return (
             <Fragment key={index}>
-              <div className="chat-message-sender">{this.props.log[index]}</div>
+              <div className="chat-message-sender">
+                {this.props.log[index].message}
+              </div>
             </Fragment>
           );
         })}
