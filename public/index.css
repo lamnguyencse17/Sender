@@ -18,21 +18,23 @@ body {
   background-size: cover;
 }
 .header {
+  clear: both;
   height: 10%;
   margin: 0;
   background: #f8c260;
 }
-.logo {
-  position: relative;
-  top: 25%;
-  height: 50%;
-  width: 20%;
+.header .logo {
+  height: 100%;
+  width: auto;
+  float: left;
+  margin-left: 2%;
 }
 .logo-text {
-  padding-left: 10%;
   font-family: "Baloo Tamma 2", cursive;
   font-size: 1.5rem;
   color: #373934;
+  margin-top: 20%;
+  margin-bottom: 20%;
 }
 
 .impressive-message {
@@ -127,4 +129,25 @@ body {
   align-self: flex-end;
   background-color: #fff;
   margin-bottom: 1%;
+}
+nav {
+  float: right;
+  height: 100%;
+}
+ul {
+  margin: 0;
+  height: 100%;
+}
+ul li {
+  display: inline-block;
+  padding-right: 2rem;
+  padding-bottom: 15%;
+  padding-top: 15%;
+}
+
+ul li a {
+  font-family: "Baloo Tamma 2", cursive;
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: #373934;
 }
