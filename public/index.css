@@ -30,11 +30,15 @@ body {
   margin-left: 2%;
 }
 .logo-text {
+  margin-top: 20%;
+  margin-bottom: 20%;
+}
+.logo-text a {
   font-family: "Baloo Tamma 2", cursive;
   font-size: 1.5rem;
   color: #373934;
-  margin-top: 20%;
-  margin-bottom: 20%;
+
+  text-decoration: none;
 }
 
 .impressive-message {

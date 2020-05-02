@@ -10,6 +10,7 @@ export default class Auth {
       redirectUri: process.env.AUTH0_CALLBACK,
       responseType: "token id_token",
       scope: "openid profile email",
+      audience: "http://localhost:3000",
     });
   }
 
@@ -17,11 +18,14 @@ export default class Auth {
     this.auth0.authorize();
   };
 
+  //TODO: handle getProfile
+
   handleAuthentication = () => {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
-        this.history.push("/player");
+        this.getProfile();
+        this.history.push("/messaging");
       } else if (err) {
         this.history.push("/");
         alert(`Error: ${err.error}. Check the console for further details. `);
@@ -47,7 +51,7 @@ export default class Auth {
     localStorage.removeItem("expires_at");
     this.userProfile = null;
     this.auth0.logout({
-      clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
+      clientID: process.env.AUTH0_CLIENT_ID,
       returnTo: "http://localhost:8080",
     });
   };
@@ -55,14 +59,15 @@ export default class Auth {
   getAccessToken = () => {
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      throw new Error("No access Token found.");
+      console.log("NO TOEKN");
     }
     return accessToken;
   };
 
-  getProfile = (cb) => {
+  getProfile = (cb = () => {}) => {
     if (this.userProfile) return cb(this.userProfile);
     this.auth0.client.userInfo(this.getAccessToken(), (err, profile) => {
+      console.log(err);
       if (profile) this.userProfile = profile;
       cb(profile, err);
     });

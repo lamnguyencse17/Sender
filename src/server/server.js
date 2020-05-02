@@ -9,8 +9,8 @@ import path from "path";
 import socketHandler from "./socket/socketHandler";
 import checkJwt from "./helpers/checkJwt";
 
-mongoose.connect("mongodb://localhost:27017/Sender", { useNewUrlParser: true });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+mongoose.connect(process.env.DATA_URI, { useNewUrlParser: true });
 const SERVER_PORT = 3000;
 const app = express();
 app.use(cors());
@@ -35,5 +35,8 @@ server.listen(SERVER_PORT, () =>
 );
 
 app.get("/api/protected/", checkJwt, (req, res) => {
+  res.send("YES");
+});
+app.get("/", (req, res) => {
   res.send("YES");
 });

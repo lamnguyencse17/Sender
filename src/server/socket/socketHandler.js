@@ -43,8 +43,8 @@ class socketHandler {
     });
   };
   onDisconnect = () => {
-    socket.leaveAll();
-    if (socket.disconnected) {
+    this.socket.leaveAll();
+    if (this.socket.disconnected) {
       console.log("Client disconnected");
     }
   };

@@ -1,12 +1,16 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { withRouter } from "react-router";
 
-export default class Navbar extends Component {
+class Navbar extends Component {
   render() {
+    const { isAuthenticated, login, logout } = this.props.auth;
     return (
       <div className="header">
         <div className="logo">
-          <div className="logo-text">SENDER</div>
+          <div className="logo-text">
+            <Link to="/">SENDER</Link>
+          </div>
         </div>
         <nav>
           <ul>
@@ -14,7 +18,15 @@ export default class Navbar extends Component {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/login">Login</Link>
+              {isAuthenticated() ? (
+                <Link to="#" onClick={logout}>
+                  Logout
+                </Link>
+              ) : (
+                <Link to="#" onClick={login}>
+                  Login
+                </Link>
+              )}
             </li>
           </ul>
         </nav>
@@ -22,3 +34,4 @@ export default class Navbar extends Component {
     );
   }
 }
+export default Navbar;
