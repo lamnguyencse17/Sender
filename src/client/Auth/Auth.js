@@ -1,4 +1,5 @@
 import auth0 from "auth0-js";
+import axios from "axios";
 
 export default class Auth {
   constructor(history) {
@@ -10,7 +11,7 @@ export default class Auth {
       redirectUri: process.env.AUTH0_CALLBACK,
       responseType: "token id_token",
       scope: "openid profile email",
-      audience: "http://localhost:3000",
+      audience: `${process.env.AUTH0_AUDIENCE}`,
     });
   }
 
@@ -18,16 +19,56 @@ export default class Auth {
     this.auth0.authorize();
   };
 
-  //TODO: handle getProfile
-
-  handleAuthentication = () => {
+  handleAuthentication = async () => {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
-        this.getProfile();
-        this.history.push("/messaging");
+        this.auth0.client.userInfo(authResult.accessToken, (err, profile) => {
+          console.log(`Bearer ${authResult.accessToken}`);
+          if (profile) {
+            this.userProfile = profile;
+            // axios.defaults.headers.common[
+            //   "Authorization"
+            // ] = `Bearer ${authResult.accessToken}`;
+            axios
+              .post(
+                `${process.env.AUTH0_AUDIENCE}/api/protected/authenticate`,
+                // headers: {
+                //   "Content-Type": "application/json",
+                //   "Access-Control-Allow-Origin": "*",
+                //   Authorization: `Bearer ${authResult.accessToken}`,
+                // },
+                {
+                  email: profile.email,
+                  name: profile.name,
+                  gravatar: profile.picture,
+                },
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    Authorization: `Bearer ${authResult.accessToken}`,
+                  },
+                }
+              )
+              .then((value, err) => {
+                if (err) {
+                  console.log(err);
+                  this.logout();
+                } else {
+                  console.log(value);
+                  this.history.push({
+                    pathname: "/messaging",
+                    state: { ...value.data },
+                  });
+                }
+              });
+            //TODO: Check with Server whether user is registered
+          }
+        });
       } else if (err) {
         this.history.push("/");
+        this.logout();
         alert(`Error: ${err.error}. Check the console for further details. `);
         console.log(err);
       }
@@ -61,6 +102,7 @@ export default class Auth {
     if (!accessToken) {
       console.log("NO TOEKN");
     }
+    console.log(accessToken);
     return accessToken;
   };
 

@@ -6,12 +6,14 @@ import ActiveBar from "./ActiveBar";
 
 const ENDPOINT = "http://127.0.0.1:3000";
 export default class Messaging extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.socket = socketIOClient(ENDPOINT, {
       query: "id=1",
       autoConnect: false,
     });
+    // console.log(this.props.location.state);
+    //TODO: sync message and room
     this.socket.connect();
     this.state = {
       history: [],

@@ -1,5 +1,9 @@
 const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
+import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({

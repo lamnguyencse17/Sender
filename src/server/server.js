@@ -34,9 +34,14 @@ server.listen(SERVER_PORT, () =>
   console.log(`Server running on port ${SERVER_PORT}`)
 );
 
-app.get("/api/protected/", checkJwt, (req, res) => {
-  res.send("YES");
-});
+app.use(
+  "/api/protected/",
+  checkJwt,
+  // (req, res, next) => {
+  //   console.log("CEHCK1"), next();
+  // },
+  require("./routes/routes")
+);
 app.get("/", (req, res) => {
   res.send("YES");
 });

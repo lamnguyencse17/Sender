@@ -1,6 +1,7 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const webpack = require("webpack");
+require("@babel/polyfill");
 
 module.exports = () => {
   const env = dotenv.config().parsed;
@@ -10,7 +11,7 @@ module.exports = () => {
   }, {});
   console.log(envKeys);
   return {
-    entry: "./src/client/Index.js",
+    entry: ["@babel/polyfill", "./src/client/Index.js"],
     output: {
       path: path.resolve(__dirname, "public"),
       publicPath: "/",
