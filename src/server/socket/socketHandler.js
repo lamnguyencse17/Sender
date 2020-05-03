@@ -16,7 +16,10 @@ class socketHandler {
     let rooms = await roomModel.getSubscribedRoom(this.id);
     let subscribedRooms = {};
     rooms.forEach((room) => {
-      subscribedRooms = { ...subscribedRooms, [room._id]: room.title };
+      subscribedRooms = {
+        ...subscribedRooms,
+        [room._id]: { title: room.title, participants: room.participants },
+      };
       socket.join(room._id);
     });
     socket.emit("subscribed-to", subscribedRooms);
@@ -30,7 +33,7 @@ class socketHandler {
     let newMessage = new messageModel({
       message: message.message,
       owner: mongoose.Types.ObjectId(message.owner),
-      room: mongoose.Types.ObjectId(message.room), //room goes herre later
+      room: mongoose.Types.ObjectId(message.room),
     });
     newMessage.save((err, product) => {
       if (err) {

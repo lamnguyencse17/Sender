@@ -8,7 +8,7 @@ export const userSchema = new Users({
   name: String,
   email: String,
   gravatar: String,
-  rooms: [ObjectId],
+  rooms: [{ type: ObjectId, ref: "Room" }],
   messages: [messageSchema],
 });
 

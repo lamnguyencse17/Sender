@@ -6,13 +6,26 @@ class socketHandler {
     this.socket = socket;
   };
   subscribedRoom = (rooms) => {
-    let defaultRoom = rooms[Object.keys(rooms)[0]];
+    // rooms: {id: {title: participants}}
+    //FIXME: the keys "id" is coming from nowhere!
+    let defaultRoom = rooms[Object.keys(rooms)[0]].title;
     let newRoom = {};
+    //TEMP FIX:
     for (let id in rooms) {
+      rooms[id].participants.forEach((participant) => {
+        delete participant.id;
+      });
       // key = id
       newRoom = {
         ...newRoom,
-        [id]: { title: rooms[id], messages: {} },
+        [id]: {
+          title: rooms[id].title,
+          participants: rooms[id].participants.reduce(
+            (obj, item) => ((obj[item._id] = item), obj),
+            {}
+          ),
+          messages: {},
+        },
       };
     }
     return { defaultRoom, newRoom };

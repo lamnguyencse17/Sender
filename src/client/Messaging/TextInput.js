@@ -17,19 +17,21 @@ export default class TextInput extends PureComponent {
   };
   render() {
     return (
-      <form noValidate autoComplete="off">
-        <TextField
-          id="filled-text-input-static"
-          fullWidth={true}
-          variant="filled"
-          onChange={(e) => {
-            this.setState({ inputValue: e.target.value });
-          }}
-          onKeyPress={this.checkKey}
-          type="string"
-          value={this.state.inputValue}
-        />
-      </form>
+      <div className="text-area">
+        <form noValidate autoComplete="off">
+          <TextField
+            id="filled-text-input-static"
+            fullWidth={true}
+            variant="filled"
+            onChange={(e) => {
+              this.setState({ inputValue: e.target.value });
+            }}
+            onKeyPress={this.checkKey}
+            type="string"
+            value={this.state.inputValue}
+          />
+        </form>
+      </div>
     );
   }
 }

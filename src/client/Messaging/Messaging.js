@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import TextInput from "./TextInput";
-import ChatLog from "./ChatLog";
 import ActiveBar from "./ActiveBar";
 import socketHandler from "../Socket/socketHandler";
+import MessageAreaContainer from "./MessageArea/MessageAreaContainer";
 
 const ENDPOINT = "http://127.0.0.1:3000";
 export default class Messaging extends Component {
@@ -13,7 +13,6 @@ export default class Messaging extends Component {
       roomList: {}, // id : {title, messages: {id, message, date, owner, room}}
       activeTab: null, // name-based
     };
-    //TODO: Reseach Needed To reduce this messy stuff
     if (this.props.location.state) {
       //redirect
       console.log("redirect");
@@ -87,7 +86,6 @@ export default class Messaging extends Component {
           target = room;
         }
       }
-
       this.setState({
         ...this.state,
         roomList: {
@@ -135,27 +133,16 @@ export default class Messaging extends Component {
     return (
       <div className="messaging-div">
         <div className="message-area">
-          {activeTab ? (
-            <ChatLog
-              log={
-                roomList[
-                  Object.keys(roomList).filter(
-                    (id) => roomList[id].title == activeTab
-                  )
-                ].messages
-              }
-              profile={profile}
-            />
-          ) : (
-            <></>
-          )}
-          <div className="text-area">
-            <TextInput
-              updateText={this.updateText}
-              sendMessage={this.sendMessage}
-              typing={typing}
-            />
-          </div>
+          <MessageAreaContainer
+            activeTab={activeTab}
+            profile={profile}
+            roomList={roomList}
+          />
+          <TextInput
+            updateText={this.updateText}
+            sendMessage={this.sendMessage}
+            typing={typing}
+          />
         </div>
         <div className="active-bar">
           {Object.keys(roomList).length !== 0 &&

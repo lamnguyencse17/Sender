@@ -5,8 +5,8 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 export const messageSchema = new Messages({
   message: String,
-  owner: ObjectId,
-  room: ObjectId,
+  owner: { type: ObjectId, ref: "User" },
+  room: { type: ObjectId, ref: "Room" },
   date: { type: Date, default: Date.now },
 });
 

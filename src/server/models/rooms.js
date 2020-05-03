@@ -6,19 +6,22 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 export const roomSchema = new Rooms({
   title: String,
-  participants: [ObjectId],
+  participants: [{ type: ObjectId, ref: "User" }],
   messages: [messageSchema],
 });
 
 roomSchema.statics.getSubscribedRoom = function (participant) {
   return this.find({
     participants: { $in: mongoose.Types.ObjectId(participant) },
-  }).then((rooms, err) => {
-    if (err) {
-      throw err;
-    }
-    return rooms;
-  });
+  })
+    .select("-__v")
+    .populate("participants", ["_id", "email", "name"])
+    .then((rooms, err) => {
+      if (err) {
+        throw err;
+      }
+      return rooms;
+    });
 };
 
 const roomModel = mongoose.model("Room", roomSchema);
