@@ -4,11 +4,6 @@ export default class ChatLog extends PureComponent {
   constructor(props) {
     super(props);
   }
-  // shouldComponentUpdate(nextProps, nextStates) {
-  //   if (nextProps.log != this.props.log) {
-  //     return true;
-  //   }
-  // }
   render() {
     return (
       <div className="chat-log">

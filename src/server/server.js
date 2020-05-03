@@ -21,12 +21,11 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 io.on("connection", (socket) => {
-  console.log("CONNECTED");
   let socketObj = new socketHandler();
   socketObj.setSocket(io, socket);
-  socket.on("client-sending-message", (message) =>
-    socketObj.onClientSendingMessage(message)
-  );
+  socket.on("client-sending-message", (message) => {
+    socketObj.onClientSendingMessage(message);
+  });
   socket.on("disconnect", () => socketObj.onDisconnect());
   socket.on("error", (err) => socketObj.onError(err));
 });

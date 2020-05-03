@@ -3,89 +3,65 @@ import socketIOClient from "socket.io-client";
 import TextInput from "./TextInput";
 import ChatLog from "./ChatLog";
 import ActiveBar from "./ActiveBar";
+import socketHandler from "../Socket/socketHandler";
 
 const ENDPOINT = "http://127.0.0.1:3000";
 export default class Messaging extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      roomList: {}, // id : {title, messages: {id, message, date, owner, room}}
+      activeTab: null, // name-based
+    };
     //TODO: Reseach Needed To reduce this messy stuff
     if (this.props.location.state) {
       //redirect
       console.log("redirect");
-      this.state = {
-        profile: {
-          id: this.props.location.state._id,
-          email: this.props.location.state.email,
-          name: this.props.location.state.name,
-          gravatar: this.props.location.state.gravatar,
-        },
+      let { _id, email, name, gravatar } = this.props.location.state;
+      this.state.profile = {
+        id: _id,
+        email: email,
+        name: name,
+        gravatar: gravatar,
       };
     } else if (!this.props.profile) {
       // from nowhere
       console.log("NOWHERE");
-      this.state = { profile: this.props.auth.getProfile() };
+      this.state.profile = this.props.auth.getProfile();
       if (this.state.profile == undefined) {
         this.props.auth.logout();
       }
     } else {
       // from parent
       console.log("Parent");
-      this.state = { profile: this.props.profile };
+      this.state.profile = this.props.profile;
     }
     this.socket = socketIOClient(ENDPOINT, {
       query: `id=${this.state.profile.id}`,
       reconnection: true,
     });
-
-    //TODO: sync message and room
     this.socket.connect();
-    this.state = {
-      history: [],
-      roomList: {}, // id : {title, messages: {id, message, date, owner, room}}
-      activeTab: null, // name-based
-    };
+    this.socketObj = new socketHandler();
+    this.socketObj.setSocket(this.socket);
   }
   componentDidMount() {
     this.socket.on("subscribed-to", (rooms) => {
       // rooms: {id: title}
-      let defaultRoom = rooms[Object.keys(rooms)[0]];
-      let newRoom = {};
-      for (let id in rooms) {
-        // key = id
-        newRoom = {
-          ...newRoom,
-          [id]: { title: rooms[id], messages: {} },
-        };
-      }
+      let { defaultRoom, newRoom } = this.socketObj.subscribedRoom(rooms);
       this.setState({
         ...this.state,
         activeTab: defaultRoom,
         roomList: { ...this.state.roomList, ...newRoom },
       });
     });
-
     this.socket.on(
-      "FromAPI",
+      "sync-messages",
       (data) => {
-        // data [{id, owner, room , message, date}]
-        let returnedToState = {};
-        data.forEach((message) => {
-          returnedToState = {
-            ...returnedToState,
-            [message._id]: {
-              message: message.message,
-              owner: message.owner,
-              room: message.room,
-              date: message.date,
-            },
-          };
-        });
-        let target = null;
-        for (let room in this.state.roomList) {
-          if (data[0]["room"] == room) {
-            target = room;
-          }
-        }
+        // data: {date, message, owner, room}
+        let { returnedToState, target } = this.socketObj.syncingMessages(
+          data,
+          this.state.roomList
+        );
         this.setState({
           ...this.state,
           roomList: {
@@ -103,13 +79,15 @@ export default class Messaging extends Component {
       []
     );
     this.socket.on("incoming-message", (data) => {
-      // data: {_id, message, owner, room}
+      // data: {id, message, owner, room}
+      let { id, message, owner, room, date } = data;
       let target = null;
       for (let room in this.state.roomList) {
-        if (data.room == this.state.roomList[room].id) {
+        if (data.room == room) {
           target = room;
         }
       }
+
       this.setState({
         ...this.state,
         roomList: {
@@ -118,11 +96,11 @@ export default class Messaging extends Component {
             ...this.state.roomList[target],
             messages: {
               ...this.state.roomList[target].messages,
-              [date.id]: {
-                message: data.message,
-                owner: data.owner,
-                date: data.date,
-                room: data.room,
+              [id]: {
+                date: date,
+                message: message,
+                owner: owner,
+                room: room,
               },
             },
           },
@@ -133,9 +111,6 @@ export default class Messaging extends Component {
   componentWillUnmount() {
     this.socket.disconnect();
   }
-  shouldComponentUpdate(nextProps, nextStates) {
-    return true;
-  }
   updateText = (event) => {
     this.setState({ ...this.state, typing: event.target.value });
   };
@@ -143,12 +118,7 @@ export default class Messaging extends Component {
     if (inputValue.length > 0) {
       Object.keys(this.state.roomList).forEach((id) => {
         if (this.state.roomList[id].title == this.state.activeTab) {
-          this.socket.emit("client-sending-message", {
-            room: this.state.roomList[this.state.activeTab].id,
-            message: inputValue,
-            owner: "5eabfa02f209780629cd9dfe",
-          });
-          console.log("SENT");
+          this.socketObj.sendMessage(inputValue, id, this.state.profile.id);
         }
       });
     }
@@ -156,7 +126,8 @@ export default class Messaging extends Component {
   setActiveTab = (value) => {
     this.setState({
       ...this.state,
-      activeTab: Object.keys(this.state.room)[value],
+      activeTab: this.state.roomList[Object.keys(this.state.roomList)[value]]
+        .title,
     });
   };
   render() {
@@ -164,7 +135,6 @@ export default class Messaging extends Component {
     return (
       <div className="messaging-div">
         <div className="message-area">
-          {/* TODO: activeTab is not compatible with new this.state.room */}
           {activeTab ? (
             <ChatLog
               log={

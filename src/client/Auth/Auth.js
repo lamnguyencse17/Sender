@@ -53,10 +53,14 @@ export default class Auth {
                 } else {
                   this.setSession(authResult, value.data);
                   this.userProfile = value.data;
-                  this.history.push({
-                    pathname: "/messaging",
-                    state: { ...value.data },
-                  });
+                  setTimeout(
+                    () =>
+                      this.history.push({
+                        pathname: "/messaging",
+                        state: { ...value.data },
+                      }),
+                    1000
+                  );
                 }
               });
           } else {
@@ -89,7 +93,6 @@ export default class Auth {
     return new Date().getTime() < expiresAt;
   }
   logout = () => {
-    //TODO: Emit disconnects
     localStorage.clear();
     this.userProfile = null;
     this.auth0.logout({
@@ -141,9 +144,9 @@ export default class Auth {
   getAccessToken = () => {
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      console.log("NO TOEKN");
+      alert("You don't have right to access this");
+      this.history.push("/");
     }
-    console.log(accessToken);
     return accessToken;
   };
 

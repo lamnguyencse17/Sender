@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import axios from "axios";
+import Loading from "./Common/Loading";
 
 export default class Callback extends Component {
   componentDidMount() {
@@ -10,6 +10,6 @@ export default class Callback extends Component {
     }
   }
   render() {
-    return <></>;
+    return <Loading />;
   }
 }
