@@ -5,9 +5,8 @@ const router = express.Router();
 
 router.use("/", async (req, res) => {
   // req.body: {email, name, gravatarURL}
-  let user = await userModel.isRegistered(req.body);
-  console.log(user);
-  res.status(200).json(user);
+  let { email, gravatar, name, _id } = await userModel.isRegistered(req.body);
+  res.status(200).json({ email, gravatar, name, _id });
 });
 
 module.exports = router;

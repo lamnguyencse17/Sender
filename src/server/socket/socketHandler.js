@@ -6,28 +6,28 @@ class socketHandler {
   constuctor() {
     this.socket = null;
     this.io = null;
+    this.id = null;
   }
   setSocket = async (io, socket) => {
     this.io = io;
     this.socket = socket;
-    console.log(`New client connected ${socket.handshake.query["id"]}`);
-    let rooms = await roomModel.getSubscribedRoom();
-    for (let room in rooms) {
-      let id = rooms[room];
-      socket.join(id);
-    }
-    socket.emit("subscribed-to", rooms);
-    Object.keys(mockData).forEach((index) => {
-      socket.emit("FromAPI", {
-        room: "5eabfa02f209780629cd9dff",
-        id: index,
-        message: mockData[index],
-        owner: "5eabfa02f209780629cd9dfe",
-        date: Date.now(),
-      });
+    this.id = socket.handshake.query["id"];
+    console.log(`New client connected ${this.id}`);
+    let rooms = await roomModel.getSubscribedRoom(this.id);
+    let subscribedRooms = {};
+    rooms.forEach((room) => {
+      subscribedRooms = { ...subscribedRooms, [room._id]: room.title };
+      socket.join(room._id);
+    });
+    socket.emit("subscribed-to", subscribedRooms);
+    rooms.forEach((room) => {
+      if (room.messages.length != 0) {
+        socket.emit("FromAPI", lastMessages(room.messages, 5));
+      }
     });
   };
   onClientSendingMessage = (message) => {
+    // TODO: normalize to incoming-message of client
     console.log(message);
     this.io.sockets.in(message.room).emit("incoming-message", message);
     let newMessage = new messageModel({
@@ -53,6 +53,12 @@ class socketHandler {
     console.log(err.stack);
   };
 }
+
+const lastMessages = (messageList, n) => {
+  if (messageList == null) return void 0;
+  if (n == null) return messageList[messageList.length - 1];
+  return messageList.slice(Math.max(messageList.length - n, 0));
+};
 
 var mockData = {
   id1: "Hello 1",

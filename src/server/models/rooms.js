@@ -10,21 +10,14 @@ export const roomSchema = new Rooms({
   messages: [messageSchema],
 });
 
-roomSchema.statics.getSubscribedRoom = function (
-  participant = "5eabfa02f209780629cd9dfe"
-) {
+roomSchema.statics.getSubscribedRoom = function (participant) {
   return this.find({
     participants: { $in: mongoose.Types.ObjectId(participant) },
   }).then((rooms, err) => {
     if (err) {
       throw err;
     }
-    let result = {};
-    for (let i = 0; i < rooms.length; i++) {
-      //We need real performance here
-      result[rooms[i].title] = rooms[i]._id;
-    }
-    return result;
+    return rooms;
   });
 };
 

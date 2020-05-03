@@ -10,6 +10,9 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.auth = new Auth(this.props.history);
+    if (this.auth.isAuthenticated()) {
+      this.profile = this.auth.startSyncing();
+    }
   }
   render() {
     return (
@@ -19,15 +22,21 @@ export default class App extends Component {
           <Route
             exact
             path="/"
-            render={(props) => <MainPage {...props} auth={this.auth} />}
+            render={(props) => (
+              <MainPage auth={this.auth} profile={this.profile} {...props} />
+            )}
           />
           <Route
             path="/messaging"
-            render={(props) => <Messaging {...props} />}
+            render={(props) => (
+              <Messaging auth={this.auth} profile={this.profile} {...props} />
+            )}
           />
           <Route
             path="/callback"
-            render={(props) => <Callback auth={this.auth} {...props} />}
+            render={(props) => (
+              <Callback auth={this.auth} profile={this.profile} {...props} />
+            )}
           />
         </Switch>
       </>

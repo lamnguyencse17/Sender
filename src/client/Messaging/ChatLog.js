@@ -1,18 +1,30 @@
 import React, { PureComponent, Fragment } from "react";
 
 export default class ChatLog extends PureComponent {
+  constructor(props) {
+    super(props);
+  }
+  // shouldComponentUpdate(nextProps, nextStates) {
+  //   if (nextProps.log != this.props.log) {
+  //     return true;
+  //   }
+  // }
   render() {
     return (
       <div className="chat-log">
-        {Object.keys(this.props.log).map((index) => {
-          return (
-            <Fragment key={index}>
-              <div className="chat-message-sender">
-                {this.props.log[index].message}
-              </div>
-            </Fragment>
-          );
-        })}
+        {this.props.log != {} ? (
+          Object.keys(this.props.log).map((index) => {
+            return (
+              <Fragment key={index}>
+                <div className="chat-message-sender">
+                  {this.props.log[index].message}
+                </div>
+              </Fragment>
+            );
+          })
+        ) : (
+          <></>
+        )}
         <div className="chat-message-recipient">RECIPIENT</div>
       </div>
     );
