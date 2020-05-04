@@ -3,10 +3,13 @@ import PropTypes from "prop-types";
 class Sender extends PureComponent {
   render() {
     return (
-      <div className="chat-message-sender">
-        <div className="owner">{this.props.owner}</div>
-        {this.props.message}
-      </div>
+      <>
+        <div className="chat-message-sender">
+          <div className="owner">{this.props.owner}</div>
+          {this.props.message}
+        </div>
+        <br></br>
+      </>
     );
   }
 }

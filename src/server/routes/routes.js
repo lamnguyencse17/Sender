@@ -10,4 +10,12 @@ router.post(
   require("./protected/authenticate")
 );
 
+router.post(
+  "/invite/:id",
+  (req, res, next) => {
+    next();
+  },
+  require("./protected/invite")
+);
+
 module.exports = router;

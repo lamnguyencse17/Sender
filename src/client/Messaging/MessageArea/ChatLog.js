@@ -9,6 +9,7 @@ class ChatLog extends PureComponent {
     console.log(this.props);
   }
   render() {
+    // TODO: fix css
     let { log, participants, profile } = this.props;
     return (
       <div className="chat-log">

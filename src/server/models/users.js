@@ -34,5 +34,27 @@ userSchema.statics.isRegistered = async function (user) {
   return result;
 };
 
+userSchema.statics.addRoom = async function (userId, roomId) {
+  return this.update(
+    {
+      _id: mongoose.Types.ObjectId(userId),
+      rooms: {
+        $ne: roomId,
+      },
+    },
+    {
+      $push: {
+        rooms: mongoose.Types.ObjectId(roomId),
+      },
+    }
+  ).then((result, err) => {
+    if (err) {
+      return { err };
+    } else {
+      return result;
+    }
+  });
+};
+
 const userModel = mongoose.model("User", userSchema);
 export default userModel;

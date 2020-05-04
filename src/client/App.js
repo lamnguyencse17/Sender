@@ -6,6 +6,7 @@ import Messaging from "./Messaging/Messaging";
 import Auth from "./Auth/Auth";
 import Callback from "./Callback";
 import PropTypes from "prop-types";
+import Invite from "./Invite";
 
 class App extends Component {
   constructor(props) {
@@ -36,6 +37,10 @@ class App extends Component {
           <Route
             path="/callback"
             render={(props) => <Callback auth={this.auth} {...props} />}
+          />
+          <Route
+            path="/invite/:roomId"
+            render={(props) => <Invite auth={this.auth} {...props} />}
           />
         </Switch>
       </>

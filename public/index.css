@@ -94,10 +94,12 @@ body {
 }
 
 .chat-log {
-  height: 85%;
+  height: 75%;
   margin: 2%;
-  display: flex;
   flex-flow: column wrap;
+  overflow-y: scroll;
+  border-style: solid;
+  border-color: black;
 }
 
 .chat-widget {
@@ -118,6 +120,7 @@ body {
   background-color: #f8c260;
   color: #373934;
   margin-bottom: 1%;
+  width: fit-content;
 }
 
 .chat-message-sender .owner {
@@ -140,6 +143,7 @@ body {
   align-self: flex-end;
   background-color: #fff;
   margin-bottom: 1%;
+  width: fit-content;
 }
 
 .chat-message-recipient .owner {
