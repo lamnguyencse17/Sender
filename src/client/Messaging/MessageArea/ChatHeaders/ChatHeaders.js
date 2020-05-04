@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import ChatMenu from "./ChatMenu";
+import PropType from "prop-types";
 
-export default class ChatHeaders extends Component {
+class ChatHeaders extends Component {
   render() {
     let { activeTab } = this.props;
     return (
@@ -14,3 +15,9 @@ export default class ChatHeaders extends Component {
     );
   }
 }
+
+ChatHeaders.propTypes = {
+  activeTab: PropType.string.isRequired,
+};
+
+export default ChatHeaders;

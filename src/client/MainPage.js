@@ -1,7 +1,9 @@
 import React from "react";
 import { Spring } from "react-spring/renderprops.cjs";
+import PropTypes from "prop-types";
+import Auth from "./Auth/Auth";
 
-export default function MainPage(props) {
+function MainPage(props) {
   const { login } = props.auth;
   return (
     <>
@@ -27,3 +29,9 @@ export default function MainPage(props) {
     </>
   );
 }
+
+MainPage.propTypes = {
+  auth: PropTypes.instanceOf(Auth).isRequired,
+};
+
+export default MainPage;

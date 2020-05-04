@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-export default class ActiveBar extends Component {
+import PropTypes from "prop-types";
+
+class ActiveBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -45,3 +47,9 @@ export default class ActiveBar extends Component {
     );
   }
 }
+
+ActiveBar.propTypes = {
+  room: PropTypes.array.isRequired,
+};
+
+export default ActiveBar;

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "be": "nodemon --exec babel-node src/server/server.js --ignore 'src/client/*'",
-    "fe": "webpack-dev-server --mode development"
+    "fe": "webpack-dev-server --mode development",
+    "docs": "jsdoc -c ./jsdoc.json"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "auth0-lock": "^11.23.1",
     "axios": "^0.19.2",
     "babel-plugin-module-resolver": "^4.0.0",
+    "better-docs": "^2.0.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
@@ -31,6 +33,7 @@
     "ejs": "^3.1.2",
     "express": "^4.17.1",
     "express-jwt": "^5.3.3",
+    "jsdoc": "^3.6.4",
     "jwks-rsa": "^1.8.0",
     "mongoose": "^5.9.11",
     "prop-types": "^15.7.2",
@@ -55,6 +58,7 @@
     "@babel/preset-react": "^7.9.4",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
+    "cssnano": "^4.1.10",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.19.0",
     "nodemon": "^2.0.3",

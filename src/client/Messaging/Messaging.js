@@ -4,9 +4,11 @@ import TextInput from "./TextInput";
 import ActiveBar from "./ActiveBar";
 import socketHandler from "../Socket/socketHandler";
 import MessageAreaContainer from "./MessageArea/MessageAreaContainer";
+import PropTypes from "prop-types";
+import Auth from "../Auth/Auth";
 
 const ENDPOINT = "http://127.0.0.1:3000";
-export default class Messaging extends Component {
+class Messaging extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -159,3 +161,16 @@ export default class Messaging extends Component {
     );
   }
 }
+
+Messaging.propTypes = {
+  location: PropTypes.object.isRequired,
+  profile: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    gravatar: PropTypes.string.isRequired,
+    auth: PropTypes.instanceOf(Auth).isRequired,
+  }).isRequired,
+};
+
+export default Messaging;

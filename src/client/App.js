@@ -5,8 +5,9 @@ import Navbar from "./Common/Navbar";
 import Messaging from "./Messaging/Messaging";
 import Auth from "./Auth/Auth";
 import Callback from "./Callback";
+import PropTypes from "prop-types";
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
     this.auth = new Auth(this.props.history);
@@ -34,12 +35,16 @@ export default class App extends Component {
           />
           <Route
             path="/callback"
-            render={(props) => (
-              <Callback auth={this.auth} profile={this.profile} {...props} />
-            )}
+            render={(props) => <Callback auth={this.auth} {...props} />}
           />
         </Switch>
       </>
     );
   }
 }
+
+App.propTypes = {
+  history: PropTypes.object.isRequired,
+};
+
+export default App;

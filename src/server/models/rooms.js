@@ -15,7 +15,7 @@ roomSchema.statics.getSubscribedRoom = function (participant) {
     participants: { $in: mongoose.Types.ObjectId(participant) },
   })
     .select("-__v")
-    .populate("participants", ["_id", "email", "name"])
+    .populate("participants", ["_id", "email", "name", "gravatar"])
     .then((rooms, err) => {
       if (err) {
         throw err;

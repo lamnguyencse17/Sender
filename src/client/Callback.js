@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import Loading from "./Common/Loading";
+import PropTypes from "prop-types";
+import Auth from "./Auth/Auth";
 
-export default class Callback extends Component {
+class Callback extends Component {
   componentDidMount() {
     if (/access_token|id_token|error/.test(this.props.location.hash)) {
       this.props.auth.handleAuthentication();
@@ -13,3 +15,9 @@ export default class Callback extends Component {
     return <Loading />;
   }
 }
+
+Callback.propTypes = {
+  auth: PropTypes.instanceOf(Auth).isRequired,
+  location: PropTypes.object.isRequired,
+};
+export default Callback;

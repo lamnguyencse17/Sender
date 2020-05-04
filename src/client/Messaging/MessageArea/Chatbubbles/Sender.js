@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
-
-export default class Sender extends PureComponent {
+import PropTypes from "prop-types";
+class Sender extends PureComponent {
   render() {
     return (
       <div className="chat-message-sender">
@@ -10,3 +10,9 @@ export default class Sender extends PureComponent {
     );
   }
 }
+Sender.propTypes = {
+  owner: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+};
+
+export default Sender;
