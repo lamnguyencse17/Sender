@@ -46,6 +46,27 @@ class Messaging extends Component {
     this.socketObj.setSocket(this.socket);
   }
   componentDidMount() {
+    this.socket.on("new-user", (data) => {
+      let announcement = {
+        id: 0,
+        message: data.message,
+        date: data.date,
+        owner: "system",
+      };
+      this.setState({
+        ...this.state,
+        roomList: {
+          ...this.state.roomList,
+          [data.room]: {
+            ...this.state.roomList[data.room],
+            messages: {
+              ...this.state.roomList[data.room].messages,
+              announcement,
+            },
+          },
+        },
+      });
+    });
     this.socket.on("subscribed-to", (rooms) => {
       // rooms: {id: title}
       let { defaultRoom, newRoom } = this.socketObj.subscribedRoom(rooms);

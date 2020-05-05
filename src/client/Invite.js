@@ -15,6 +15,7 @@ export default class Invite extends Component {
         `${process.env.AUTH0_AUDIENCE}/api/protected/invite/${this.props.match.params.roomId}`,
         {
           id: this.props.auth.userProfile.id,
+          name: this.props.auth.userProfile.name,
         },
         {
           headers: {

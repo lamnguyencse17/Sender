@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from "react";
 import Sender from "./Chatbubbles/Sender";
 import Receiver from "./Chatbubbles/Receiver";
+import System from "./Chatbubbles/System";
 import PropTypes from "prop-types";
 
 class ChatLog extends PureComponent {
@@ -19,6 +20,8 @@ class ChatLog extends PureComponent {
               <Fragment key={index}>
                 {log[index].owner == profile.id ? (
                   <Receiver owner={profile.name} message={log[index].message} />
+                ) : log[index].owner == "system" ? (
+                  <System owner={"system"} message={log[index].message} />
                 ) : (
                   <Sender
                     owner={participants[log[index].owner].name}

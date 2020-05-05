@@ -1,6 +1,5 @@
 import http from "http";
 import express from "express";
-import socketio from "socket.io";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -8,6 +7,7 @@ import bodyParser from "body-parser";
 import path from "path";
 import socketHandler from "./socket/socketHandler";
 import checkJwt from "./helpers/checkJwt";
+import { setio } from "./socket/socketio";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 mongoose.connect(process.env.DATA_URI, { useNewUrlParser: true });
@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const server = http.createServer(app);
-const io = socketio(server);
+const io = setio(server);
 
 io.on("connection", (socket) => {
   let socketObj = new socketHandler();

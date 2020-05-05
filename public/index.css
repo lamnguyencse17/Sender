@@ -197,3 +197,11 @@ ul li a {
   float: right;
   padding-right: 1rem;
 }
+
+.chat-message-system {
+  font-family: "Baloo Tamma 2", cursive;
+  color: #373934;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
