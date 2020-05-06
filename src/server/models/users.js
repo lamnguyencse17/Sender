@@ -33,7 +33,9 @@ userSchema.statics.isRegistered = async function (user) {
   );
   return result;
 };
-
+userSchema.statics.getName = async function (userId) {
+  return await this.findOne({ _id: userId }).select("name -_id");
+};
 userSchema.statics.addRoom = async function (userId, roomId) {
   return this.update(
     {

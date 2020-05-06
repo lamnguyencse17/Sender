@@ -28,6 +28,7 @@ io.on("connection", (socket) => {
   });
   socket.on("disconnect", () => socketObj.onDisconnect());
   socket.on("error", (err) => socketObj.onError(err));
+  socket.on("sending-file", (data) => socketObj.onClientSendingFile(data));
 });
 
 server.listen(SERVER_PORT, () =>

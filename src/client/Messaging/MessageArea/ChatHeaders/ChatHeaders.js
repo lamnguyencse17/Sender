@@ -9,7 +9,7 @@ class ChatHeaders extends Component {
       <div className="chat-header">
         <p>{activeTab}</p>
         <div className="options">
-          <ChatMenu />
+          <ChatMenu participants={this.props.participants} />
         </div>
       </div>
     );

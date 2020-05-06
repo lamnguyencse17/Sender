@@ -8,25 +8,36 @@ class MessageAreaContainer extends Component {
     let { activeTab, roomList, profile } = this.props;
     return (
       <>
-        <ChatHeaders activeTab={activeTab} />
         {activeTab ? (
-          <ChatLog
-            log={
-              roomList[
-                Object.keys(roomList).filter(
-                  (id) => roomList[id].title == activeTab
-                )
-              ].messages
-            }
-            profile={profile}
-            participants={
-              roomList[
-                Object.keys(roomList).filter(
-                  (id) => roomList[id].title == activeTab
-                )
-              ].participants
-            }
-          />
+          <>
+            <ChatHeaders
+              activeTab={activeTab}
+              participants={
+                roomList[
+                  Object.keys(roomList).filter(
+                    (id) => roomList[id].title == activeTab
+                  )
+                ].participants
+              }
+            />
+            <ChatLog
+              log={
+                roomList[
+                  Object.keys(roomList).filter(
+                    (id) => roomList[id].title == activeTab
+                  )
+                ].messages
+              }
+              profile={profile}
+              participants={
+                roomList[
+                  Object.keys(roomList).filter(
+                    (id) => roomList[id].title == activeTab
+                  )
+                ].participants
+              }
+            />
+          </>
         ) : (
           <></>
         )}
@@ -40,16 +51,16 @@ MessageAreaContainer.propTypes = {
   roomList: PropTypes.objectOf(
     PropTypes.shape({
       title: PropTypes.string.isRequired,
-      messages: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        message: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired,
-        owner: PropTypes.string.isRequired,
-        room: PropTypes.string.isRequired,
-      }).isRequired,
+      messages: PropTypes.objectOf(
+        PropTypes.shape({
+          message: PropTypes.string.isRequired,
+          date: PropTypes.string.isRequired,
+          owner: PropTypes.string.isRequired,
+          room: PropTypes.string.isRequired,
+        })
+      ).isRequired,
       participants: PropTypes.objectOf(
         PropTypes.shape({
-          id: PropTypes.string.isRequired,
           email: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
           gravatar: PropTypes.string.isRequired,

@@ -1,6 +1,9 @@
 import roomModel from "../models/rooms";
 import messageModel from "../models/messages";
+import userModel from "../models/users";
 import mongoose from "mongoose";
+const { createModel } = require("mongoose-gridfs");
+const Duplex = require("stream").Duplex;
 
 class socketHandler {
   constuctor() {
@@ -28,6 +31,53 @@ class socketHandler {
         socket.emit("sync-messages", lastMessages(room.messages, 5));
       }
     });
+  };
+  onClientSendingFile = (fileObj) => {
+    const Attachment = createModel({
+      modelName: "Attachment",
+    });
+    let stream = new Duplex();
+    stream.push(fileObj.data);
+    stream.push(null);
+    fileObj.name = `${Math.round(new Date().getTime() / 1000)}-${fileObj.name}`;
+    const options = {
+      filename: fileObj.name,
+      contentType: fileObj.type,
+      owner: fileObj.owner,
+      date: Date.now(),
+      room: fileObj.room,
+    };
+    Attachment.write;
+    Attachment.write(options, stream, async (err, file) => {
+      if (err) {
+        console.log(err);
+      } else {
+        // rewrite to a new function?
+        let { name } = await userModel.getName(fileObj.owner);
+        let newMessage = new messageModel({
+          message: `${name} share a file at: http://127.0.0.1:8080/file/${fileObj.name}`,
+          owner: mongoose.Types.ObjectId(fileObj.owner),
+          room: mongoose.Types.ObjectId(fileObj.room),
+          date: fileObj.date,
+        });
+        newMessage.save((err, product) => {
+          if (err) {
+            console.log(err);
+            return;
+          } else {
+            this.io.sockets.in(fileObj.room).emit("incoming-message", {
+              id: product._id,
+              message: product.message,
+              owner: product.owner,
+              date: product.date,
+              room: product.room,
+            });
+          }
+        });
+      }
+    });
+    // flow: get file -> write to gridfs -> make a link -> return a link -> encode as message with file name
+    // model: collect filedata, file
   };
   onClientSendingMessage = (message) => {
     let newMessage = new messageModel({

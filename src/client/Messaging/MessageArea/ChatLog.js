@@ -50,7 +50,6 @@ ChatLog.propTypes = {
   ),
   participants: PropTypes.objectOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
       email: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       gravatar: PropTypes.string.isRequired,

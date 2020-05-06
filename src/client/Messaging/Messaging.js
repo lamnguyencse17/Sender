@@ -79,6 +79,7 @@ class Messaging extends Component {
     this.socket.on(
       "sync-messages",
       (data) => {
+        console.log(data);
         // data: {date, message, owner, room}
         let { returnedToState, target } = this.socketObj.syncingMessages(
           data,
@@ -151,6 +152,33 @@ class Messaging extends Component {
         .title,
     });
   };
+  // split to file handling later
+  handleFileSelect = (e) => {
+    e.preventDefault();
+    let test = this.buildFileSelector();
+    test.onchange = this.logChange;
+    test.click();
+  };
+  logChange = (e) => {
+    let file = e.target.files[0];
+    console.log(file);
+    Object.keys(this.state.roomList).forEach((id) => {
+      if (this.state.roomList[id].title == this.state.activeTab) {
+        this.socket.emit("sending-file", {
+          name: file.name,
+          type: file.type,
+          owner: this.state.profile.id,
+          room: id,
+          data: e.target.files[0],
+        });
+      }
+    });
+  };
+  buildFileSelector = () => {
+    const fileSelector = document.createElement("input");
+    fileSelector.setAttribute("type", "file");
+    return fileSelector;
+  };
   render() {
     let { profile, roomList, activeTab, typing } = this.state;
     return (
@@ -165,6 +193,7 @@ class Messaging extends Component {
             updateText={this.updateText}
             sendMessage={this.sendMessage}
             typing={typing}
+            handleFileSelect={this.handleFileSelect}
           />
         </div>
         <div className="active-bar">
@@ -190,8 +219,8 @@ Messaging.propTypes = {
     email: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     gravatar: PropTypes.string.isRequired,
-    auth: PropTypes.instanceOf(Auth).isRequired,
   }).isRequired,
+  auth: PropTypes.instanceOf(Auth).isRequired,
 };
 
 export default Messaging;
