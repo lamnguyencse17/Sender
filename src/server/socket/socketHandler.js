@@ -2,7 +2,8 @@ import roomModel from "../models/rooms";
 import messageModel from "../models/messages";
 import userModel from "../models/users";
 import mongoose from "mongoose";
-const { createModel } = require("mongoose-gridfs");
+import { writeToGridFS } from "../models/gridfs";
+import { broadcastToRoom } from "../socket/socketio";
 const Duplex = require("stream").Duplex;
 
 class socketHandler {
@@ -32,27 +33,12 @@ class socketHandler {
       }
     });
   };
-  onClientSendingFile = (fileObj) => {
-    const Attachment = createModel({
-      modelName: "Attachment",
-    });
-    let stream = new Duplex();
-    stream.push(fileObj.data);
-    stream.push(null);
-    fileObj.name = `${Math.round(new Date().getTime() / 1000)}-${fileObj.name}`;
-    const options = {
-      filename: fileObj.name,
-      contentType: fileObj.type,
-      owner: fileObj.owner,
-      date: Date.now(),
-      room: fileObj.room,
-    };
-    Attachment.write;
-    Attachment.write(options, stream, async (err, file) => {
+
+  onClientSendingFile = async (fileObj) => {
+    writeToGridFS(fileObj).then(async (result, err) => {
       if (err) {
         console.log(err);
       } else {
-        // rewrite to a new function?
         let { name } = await userModel.getName(fileObj.owner);
         let newMessage = new messageModel({
           message: `${name} share a file at: http://127.0.0.1:8080/file/${fileObj.name}`,
@@ -65,13 +51,7 @@ class socketHandler {
             console.log(err);
             return;
           } else {
-            this.io.sockets.in(fileObj.room).emit("incoming-message", {
-              id: product._id,
-              message: product.message,
-              owner: product.owner,
-              date: product.date,
-              room: product.room,
-            });
+            broadcastToRoom(product);
           }
         });
       }
@@ -90,7 +70,7 @@ class socketHandler {
         console.log(err);
         return;
       } else {
-        this.io.sockets.in(message.room).emit("incoming-message", {
+        broadcastToRoom({
           id: product._id,
           message: product.message,
           owner: product.owner,

@@ -1,4 +1,3 @@
-//TODO: Invite Link
 import express from "express";
 import roomSchema from "../../models/rooms";
 import { announceNewUser } from "../../socket/socketio";
@@ -11,7 +10,7 @@ router.use("/invite/:roomId", async (req, res) => {
   let userId = req.body.id;
   let name = req.body.name;
   console.log(roomId, userId);
-  let result = await roomSchema.isRoomAvailable(roomId, userId);
+  let result = await roomSchema.addToRoom(roomId, userId);
   if (result.err) {
     return res.status(200).json({ err: result.err });
   } else {

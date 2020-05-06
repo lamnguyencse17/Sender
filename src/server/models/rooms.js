@@ -25,7 +25,14 @@ roomSchema.statics.getSubscribedRoom = function (participant) {
     });
 };
 
-roomSchema.statics.isRoomAvailable = async function (roomId, userId) {
+roomSchema.statics.isUserInRoom = async function (roomId, userId) {
+  return await this.exists({
+    _id: mongoose.Types.ObjectId(roomId),
+    participants: { $in: [mongoose.Types.ObjectId(userId)] },
+  });
+};
+
+roomSchema.statics.addToRoom = async function (roomId, userId) {
   return await this.update(
     {
       _id: roomId,

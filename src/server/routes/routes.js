@@ -18,4 +18,12 @@ router.post(
   require("./protected/invite")
 );
 
+router.post(
+  "/file/:filename",
+  (req, res, next) => {
+    next();
+  },
+  require("./protected/file")
+);
+
 module.exports = router;

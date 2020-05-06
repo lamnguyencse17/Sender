@@ -18,3 +18,13 @@ export const announceNewUser = (roomId, name) => {
   });
   return res.status(200).json({ message: result.message });
 };
+
+export const broadcastToRoom = (messageObj) => {
+  io.sockets.in(messageObj.room).emit("incoming-message", {
+    id: messageObj._id,
+    message: messageObj.message,
+    owner: messageObj.owner,
+    date: messageObj.date,
+    room: messageObj.room,
+  });
+};
