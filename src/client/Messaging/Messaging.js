@@ -67,6 +67,9 @@ class Messaging extends Component {
         },
       });
     });
+    this.socket.on("provide-key", (data) => {
+      console.log(data);
+    });
     this.socket.on("subscribed-to", (rooms) => {
       // rooms: {id: title}
       let { defaultRoom, newRoom } = this.socketObj.subscribedRoom(rooms);

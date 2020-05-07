@@ -22,9 +22,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const server = http.createServer(app);
 const io = setio(server);
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   let socketObj = new socketHandler();
   socketObj.setSocket(io, socket);
+  socketObj.providePublicKey();
   socket.on("client-sending-message", (message) => {
     socketObj.onClientSendingMessage(message);
   });
@@ -33,8 +34,8 @@ io.on("connection", (socket) => {
   socket.on("sending-file", (data) => socketObj.onClientSendingFile(data));
 });
 
-server.listen(SERVER_PORT, () =>
-  console.log(`Server running on port ${SERVER_PORT}`)
-);
+server.listen(SERVER_PORT, async () => {
+  console.log(`Server running on port ${SERVER_PORT}`);
+});
 
 app.use("/api/protected/", checkJwt, require("./routes/routes"));

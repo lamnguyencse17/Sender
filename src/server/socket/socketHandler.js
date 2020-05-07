@@ -2,10 +2,12 @@ import roomModel from "../models/rooms";
 import messageModel from "../models/messages";
 import userModel from "../models/users";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 import path from "path";
 import { writeToGridFS } from "../models/gridfs";
 import { broadcastToRoom } from "../socket/socketio";
-const Duplex = require("stream").Duplex;
+import { rsaEncryptToUser } from "../helpers/cryptography";
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 class socketHandler {
   constuctor() {
@@ -34,7 +36,15 @@ class socketHandler {
       }
     });
   };
-
+  providePublicKey = async () => {
+    this.io.emit(
+      "provide-key",
+      rsaEncryptToUser(
+        process.env.PUBLIC_KEY,
+        await userModel.getPublicKey(this.id)
+      )
+    );
+  };
   onClientSendingFile = async (fileObj) => {
     fileObj.name = path.parse(fileObj.name).name;
     writeToGridFS(fileObj).then(async (result, err) => {

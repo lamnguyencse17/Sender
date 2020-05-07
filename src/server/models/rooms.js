@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { messageSchema } from "./messages";
 import userModel from "./users";
+import { generateKeyPair, encrypt, decrypt } from "../helpers/cryptography";
+import { resolveInclude } from "ejs";
 
 const Rooms = mongoose.Schema;
 const ObjectId = mongoose.Schema.Types.ObjectId;
@@ -9,7 +11,35 @@ export const roomSchema = new Rooms({
   title: String,
   participants: [{ type: ObjectId, ref: "User" }],
   messages: [messageSchema],
+  publicKey: { type: String, default: "" },
+  privateKey: { type: String, default: "" },
 });
+
+roomSchema.statics.newRoom = async function (title, participants = []) {
+  return new Promise((resolve, reject) => {
+    for (index in participants) {
+      participants[index] = mongoose.Types.ObjectId(participants[index]);
+    }
+    generateKeyPair().then(async (keyPair, err) => {
+      if (err) {
+        reject(err);
+      } else {
+        let result = await this.create({
+          title,
+          participants,
+          messsages: [],
+          publicKey: encrypt(keyPair.publicKey).encrypted,
+          privateKey: encrypt(keyPair.privateKey).encrypted,
+        });
+        resolve({
+          ...result,
+          publicKey: keyPair.publicKey,
+          privateKey: keyPair.privateKey,
+        });
+      }
+    });
+  });
+};
 
 roomSchema.statics.getSubscribedRoom = function (participant) {
   return this.find({

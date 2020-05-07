@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import { messageSchema } from "./messages";
 
 const Users = mongoose.Schema;
@@ -10,6 +10,7 @@ export const userSchema = new Users({
   gravatar: String,
   rooms: [{ type: ObjectId, ref: "Room" }],
   messages: [messageSchema],
+  publicKey: { type: String, default: "" },
 });
 
 userSchema.statics.isRegistered = async function (user) {
@@ -35,6 +36,28 @@ userSchema.statics.isRegistered = async function (user) {
 };
 userSchema.statics.getName = async function (userId) {
   return await this.findOne({ _id: userId }).select("name -_id");
+};
+userSchema.statics.setPublicKey = async function (userId, publicKey) {
+  return this.update(
+    { _id: mongoose.Types.ObjectId(userId) },
+    {
+      publicKey,
+    }
+  ).then((result, err) => {
+    if (err) {
+      console.log(err);
+      return;
+    } else {
+      return result;
+    }
+  });
+};
+userSchema.statics.getPublicKey = async function (userId) {
+  let result = await this.findOne({
+    _id: mongoose.Types.ObjectId(userId),
+  }).select("publicKey -_id");
+  console.log(result);
+  return result.publicKey;
 };
 userSchema.statics.addRoom = async function (userId, roomId) {
   return this.update(
