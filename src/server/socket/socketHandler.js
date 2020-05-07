@@ -2,6 +2,7 @@ import roomModel from "../models/rooms";
 import messageModel from "../models/messages";
 import userModel from "../models/users";
 import mongoose from "mongoose";
+import path from "path";
 import { writeToGridFS } from "../models/gridfs";
 import { broadcastToRoom } from "../socket/socketio";
 const Duplex = require("stream").Duplex;
@@ -35,13 +36,14 @@ class socketHandler {
   };
 
   onClientSendingFile = async (fileObj) => {
+    fileObj.name = path.parse(fileObj.name).name;
     writeToGridFS(fileObj).then(async (result, err) => {
       if (err) {
         console.log(err);
       } else {
         let { name } = await userModel.getName(fileObj.owner);
         let newMessage = new messageModel({
-          message: `${name} share a file at: http://127.0.0.1:8080/file/${fileObj.name}`,
+          message: `${name} share a file at: http://localhost:8080/file/${fileObj.name}`,
           owner: mongoose.Types.ObjectId(fileObj.owner),
           room: mongoose.Types.ObjectId(fileObj.room),
           date: fileObj.date,

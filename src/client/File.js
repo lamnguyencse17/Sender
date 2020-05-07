@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import Loading from "./Common/Loading";
 import axios from "axios";
+import mime from "mime-types";
 
 export default class File extends PureComponent {
   constructor(props) {
@@ -39,7 +40,9 @@ export default class File extends PureComponent {
           link.href = url;
           link.setAttribute(
             "download",
-            `${this.props.match.params.filename}.pdf`
+            `${this.props.match.params.filename}.${mime.extension(
+              result.headers["content-type"]
+            )}`
           );
           document.body.appendChild(link);
           link.click();

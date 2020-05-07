@@ -15,7 +15,7 @@ export const writeToGridFS = (file) => {
         let gridFSBucket = new GridFSBucket(client.db(), {
           bucketName: "attachments",
         });
-        gridFSBucket.openUploadStream(file.name, {
+        let bucket = gridFSBucket.openUploadStream(file.name, {
           contentType: file.type,
           metadata: {
             owner: file.owner,

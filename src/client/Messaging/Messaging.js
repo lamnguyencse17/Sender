@@ -177,6 +177,10 @@ class Messaging extends Component {
   buildFileSelector = () => {
     const fileSelector = document.createElement("input");
     fileSelector.setAttribute("type", "file");
+    fileSelector.setAttribute(
+      "accept",
+      ".pdf,.txt,audio/*,video/*,image/*,.zip,.rar"
+    );
     return fileSelector;
   };
   render() {

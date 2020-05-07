@@ -93,7 +93,7 @@ export default class Auth {
     return new Date().getTime() < expiresAt;
   }
   logout = () => {
-    localStorage.clear();
+    window.localStorage.clear();
     this.userProfile = null;
     this.auth0.logout({
       clientID: process.env.AUTH0_CLIENT_ID,
@@ -143,9 +143,10 @@ export default class Auth {
   };
   getAccessToken = () => {
     const accessToken = localStorage.getItem("access_token");
+    console.log(accessToken);
     if (!accessToken) {
       alert("You don't have right to access this");
-      this.history.push("/");
+      this.logout();
     }
     return accessToken;
   };
