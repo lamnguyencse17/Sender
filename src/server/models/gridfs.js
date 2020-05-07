@@ -49,7 +49,10 @@ export const getFileFromGridFS = (filename, userId) => {
         let gridFSBucket = new GridFSBucket(client.db(), {
           bucketName: "attachments",
         });
-        let file = await gridFSBucket.find({ filename }).toArray();
+        let file = await gridFSBucket
+          .find({ filename: { $regex: filename } })
+          .toArray();
+        filename = file[0].filename;
         let roomId = file[0].metadata.room;
         let result = await roomSchema.isUserInRoom(roomId, userId);
         if (result) {

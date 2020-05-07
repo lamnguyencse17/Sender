@@ -7,6 +7,7 @@ import Auth from "./Auth/Auth";
 import Callback from "./Callback";
 import PropTypes from "prop-types";
 import Invite from "./Invite";
+import File from "./File";
 
 class App extends Component {
   constructor(props) {
@@ -41,6 +42,10 @@ class App extends Component {
           <Route
             path="/invite/:roomId"
             render={(props) => <Invite auth={this.auth} {...props} />}
+          />
+          <Route
+            path="/file/:filename"
+            render={(props) => <File auth={this.auth} {...props} />}
           />
         </Switch>
       </>

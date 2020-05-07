@@ -18,7 +18,7 @@ router.post(
   require("./protected/invite")
 );
 
-router.post(
+router.get(
   "/file/:filename",
   (req, res, next) => {
     next();

@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import Loading from "./Common/Loading";
 import axios from "axios";
 
-export default class Invite extends Component {
+export default class Invite extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {

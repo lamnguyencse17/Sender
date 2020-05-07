@@ -8,12 +8,14 @@ import path from "path";
 import socketHandler from "./socket/socketHandler";
 import checkJwt from "./helpers/checkJwt";
 import { setio } from "./socket/socketio";
+import morgan from "morgan";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 mongoose.connect(process.env.DATA_URI, { useNewUrlParser: true });
 const SERVER_PORT = 3000;
 const app = express();
 app.use(cors());
+app.use(morgan("tiny"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -36,6 +38,3 @@ server.listen(SERVER_PORT, () =>
 );
 
 app.use("/api/protected/", checkJwt, require("./routes/routes"));
-app.get("/", (req, res) => {
-  res.send("YES");
-});
