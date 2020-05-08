@@ -32,3 +32,31 @@ export const decapsulation = (encrypted) => {
   let result = decryptContent(encrypted.content, passphrase, encrypted.iv);
   return result;
 };
+
+const encryptContent = (content, passphrase, iv) => {
+  let cipher = forge.cipher.createCipher("AES-CBC", passphrase);
+  content = JSON.stringify(content);
+  cipher.start({ iv });
+  cipher.update(forge.util.createBuffer(content, "utf8"));
+  cipher.finish();
+  let output = cipher.output;
+  return output.toHex();
+};
+const encryptPassphrase = (passphrase, publicKey) => {
+  publicKey = publicKeyFromPem(publicKey);
+  let encrypted = publicKey.encrypt(passphrase, "RSA-OAEP");
+  encrypted = bytesToHex(encrypted);
+  return encrypted;
+};
+
+export const encapsulation = async (content, publicKey) => {
+  let passphrase = await randomString();
+  let iv = await randomString();
+  let newContent = encryptContent(content, passphrase, iv);
+  let newPassphrase = encryptPassphrase(passphrase, publicKey);
+  return {
+    passphrase: newPassphrase,
+    iv: bytesToHex(iv),
+    content: newContent,
+  };
+};

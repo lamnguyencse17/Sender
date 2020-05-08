@@ -5,34 +5,6 @@ const bytesToHex = forge.util.bytesToHex;
 const publicKeyFromPem = forge.pki.publicKeyFromPem;
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
-const algorithm = "aes-256-cbc";
-const iv = Buffer.from(process.env.SALT);
-
-export const encrypt = (text, passphrase = process.env.PASSPHRASE) => {
-  // passphrase can be id
-  let cipher = crypto.createCipheriv(algorithm, passphrase, iv);
-  let encrypted = cipher.update(text, "utf-8", "hex");
-  encrypted = encrypted + cipher.final("hex");
-  return { encrypted, iv };
-};
-
-export const decrypt = (text, passphrase = process.env.PASSPHRASE) => {
-  let encryptedText = Buffer.from(text, "hex");
-  let decipher = crypto.createDecipheriv(algorithm, passphrase, iv);
-  let decrypted = decipher.update(encryptedText, "hex", "utf-8");
-  return decrypted + decipher.final("utf-8");
-};
-
-export const rsaDecryptFromUser = (encrypted) => {
-  // base64
-  let temp = process.env.PRIVATE_KEY.split("\n");
-  let privateKey = `${temp[0]}` + "\n" + `${temp[1]}` + "\n" + `${temp[2]}`;
-  let result = crypto.privateDecrypt(
-    privateKey,
-    Buffer.from(encrypted, "base64")
-  );
-  return JSON.parse(result.toString("utf-8"));
-};
 
 const randomString = () => {
   return new Promise((resolve, reject) =>
@@ -73,6 +45,30 @@ export const encapsulation = async (content, publicKey) => {
     iv: bytesToHex(iv),
     content: newContent,
   };
+};
+
+const decryptPassphrase = (passphrase, privateKey) => {
+  privateKey = forge.pki.privateKeyFromPem(privateKey);
+  passphrase = forge.util.hexToBytes(passphrase);
+  let decrypted = privateKey.decrypt(passphrase, "RSA-OAEP");
+  return decrypted;
+};
+// content -> stringify -> buffer -> hex -> content
+const decryptContent = (content, passphrase, iv) => {
+  content = forge.util.hexToBytes(content);
+  let decipher = forge.cipher.createDecipher("AES-CBC", passphrase);
+  decipher.start({ iv: forge.util.hexToBytes(iv) });
+  decipher.update(forge.util.createBuffer(content, "raw"));
+  decipher.finish();
+  let output = decipher.output;
+  return JSON.parse(output);
+};
+
+export const decapsulation = (encrypted) => {
+  let privateKey = sessionStorage.getItem("privateKey");
+  let passphrase = decryptPassphrase(encrypted.passphrase, privateKey);
+  let result = decryptContent(encrypted.content, passphrase, encrypted.iv);
+  return result;
 };
 
 export const generateKeyPair = () => {

@@ -26,7 +26,7 @@ router.get(
   require("./protected/file")
 );
 
-router.post(
+router.use(
   "/key",
   (req, res, next) => {
     console.log("check");
