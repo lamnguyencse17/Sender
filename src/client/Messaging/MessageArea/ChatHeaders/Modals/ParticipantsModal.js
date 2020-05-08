@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import List from "@material-ui/core/List";
@@ -21,7 +20,7 @@ export default function SpringModal(props) {
           timeout: 500,
         }}
       >
-        <div className="participants-modal">
+        <div className="modal-center">
           <List component="nav" aria-label="mailbox folders">
             {Object.keys(props.participants).map((participant) => {
               return (

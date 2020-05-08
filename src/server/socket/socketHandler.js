@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { writeToGridFS } from "../models/gridfs";
 import { broadcastToRoom } from "../socket/socketio";
-import { rsaEncryptToUser } from "../helpers/cryptography";
+import { encapsulation } from "../helpers/cryptography";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 class socketHandler {
@@ -37,13 +37,11 @@ class socketHandler {
     });
   };
   providePublicKey = async () => {
-    this.io.emit(
-      "provide-key",
-      rsaEncryptToUser(
-        process.env.PUBLIC_KEY,
-        await userModel.getPublicKey(this.id)
-      )
+    let encrypted = await encapsulation(
+      { publicKey: process.env.PUBLIC_KEY },
+      await userModel.getPublicKey(this.id)
     );
+    this.socket.emit("provide-key", encrypted);
   };
   onClientSendingFile = async (fileObj) => {
     fileObj.name = path.parse(fileObj.name).name;

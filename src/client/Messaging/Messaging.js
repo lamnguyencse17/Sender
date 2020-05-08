@@ -6,6 +6,8 @@ import socketHandler from "../Socket/socketHandler";
 import MessageAreaContainer from "./MessageArea/MessageAreaContainer";
 import PropTypes from "prop-types";
 import Auth from "../Auth/Auth";
+import { decapsulation, validatePrivateKey } from "../Crypto/crypto";
+import PrivateInput from "./PrivateInput";
 
 const ENDPOINT = "http://127.0.0.1:3000";
 class Messaging extends Component {
@@ -14,7 +16,12 @@ class Messaging extends Component {
     this.state = {
       roomList: {}, // id : {title, messages: {id, message, date, owner, room}}
       activeTab: null, // name-based
+      privateKeyAvailable: false,
     };
+    let privateKey = sessionStorage.getItem("privateKey");
+    if (privateKey && validatePrivateKey(privateKey)) {
+      this.state.privateKeyAvailable = true;
+    }
     if (this.props.location.state) {
       //redirect
       console.log("redirect");
@@ -67,8 +74,9 @@ class Messaging extends Component {
         },
       });
     });
-    this.socket.on("provide-key", (data) => {
-      console.log(data);
+    this.socket.on("provide-key", async (data) => {
+      let { publicKey } = await decapsulation(data);
+      sessionStorage.setItem("serverPublicKey", publicKey);
     });
     this.socket.on("subscribed-to", (rooms) => {
       // rooms: {id: title}
@@ -186,10 +194,22 @@ class Messaging extends Component {
     );
     return fileSelector;
   };
+  closePrivateInput = () => {
+    let privateKey = sessionStorage.getItem("privateKey");
+    if (privateKey && validatePrivateKey(privateKey)) {
+      this.setState({
+        privateKeyAvailable: true,
+      });
+    }
+  };
   render() {
     let { profile, roomList, activeTab, typing } = this.state;
     return (
       <div className="messaging-div">
+        <PrivateInput
+          open={!this.state.privateKeyAvailable}
+          closeModal={this.closePrivateInput}
+        />
         <div className="message-area">
           <MessageAreaContainer
             activeTab={activeTab}

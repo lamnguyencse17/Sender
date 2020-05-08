@@ -1,6 +1,8 @@
-import crypto from "crypto";
+import forge, { cipher } from "node-forge";
 import dotenv from "dotenv";
 import path from "path";
+const bytesToHex = forge.util.bytesToHex;
+const publicKeyFromPem = forge.pki.publicKeyFromPem;
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 const algorithm = "aes-256-cbc";
@@ -24,9 +26,7 @@ export const decrypt = (text, passphrase = process.env.PASSPHRASE) => {
 export const rsaDecryptFromUser = (encrypted) => {
   // base64
   let temp = process.env.PRIVATE_KEY.split("\n");
-  let privateKey = `${temp[0]}
-${temp[1]}
-${temp[2]}`;
+  let privateKey = `${temp[0]}` + "\n" + `${temp[1]}` + "\n" + `${temp[2]}`;
   let result = crypto.privateDecrypt(
     privateKey,
     Buffer.from(encrypted, "base64")
@@ -34,15 +34,45 @@ ${temp[2]}`;
   return JSON.parse(result.toString("utf-8"));
 };
 
-export const rsaEncryptToUser = (plaintext, publicKey) => {
-  console.log(publicKey);
-  let temp = publicKey.split("\n");
-  publicKey = `${temp[0]}
-${temp[1]}
-${temp[2]}`;
-  plaintext = JSON.stringify(plaintext);
-  let result = crypto.publicEncrypt(publicKey, Buffer.from(plaintext, "utf-8"));
-  return result.toString("base64");
+const randomString = () => {
+  return new Promise((resolve, reject) =>
+    forge.random.getBytes(16, (err, bytes) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(bytes);
+      }
+    })
+  );
+};
+
+const encryptContent = (content, passphrase, iv) => {
+  let cipher = forge.cipher.createCipher("AES-CBC", passphrase);
+  content = JSON.stringify(content);
+  cipher.start({ iv });
+  cipher.update(forge.util.createBuffer(content, "utf8"));
+  cipher.finish();
+  let output = cipher.output;
+  return output.toHex();
+};
+const encryptPassphrase = (passphrase, publicKey) => {
+  publicKey = publicKeyFromPem(publicKey);
+  let encrypted = publicKey.encrypt(passphrase, "RSA-OAEP");
+  encrypted = bytesToHex(encrypted);
+  return encrypted;
+};
+
+export const encapsulation = async (content, publicKey) => {
+  // encrypt Original Content
+  let passphrase = await randomString();
+  let iv = await randomString();
+  let newContent = encryptContent(content, passphrase, iv);
+  let newPassphrase = encryptPassphrase(passphrase, publicKey);
+  return {
+    passphrase: newPassphrase,
+    iv: bytesToHex(iv),
+    content: newContent,
+  };
 };
 
 export const generateKeyPair = () => {

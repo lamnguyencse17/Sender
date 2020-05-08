@@ -56,7 +56,6 @@ userSchema.statics.getPublicKey = async function (userId) {
   let result = await this.findOne({
     _id: mongoose.Types.ObjectId(userId),
   }).select("publicKey -_id");
-  console.log(result);
   return result.publicKey;
 };
 userSchema.statics.addRoom = async function (userId, roomId) {
