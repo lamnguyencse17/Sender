@@ -50,7 +50,6 @@ class socketHandler {
         ...newRoom,
         [id]: {
           title: rooms[id].title,
-          publicKey: rooms[id].publicKey,
           participants: rooms[id].participants.reduce(
             (obj, item) => ((obj[item._id] = item), obj),
             {}
@@ -97,14 +96,13 @@ class socketHandler {
    * @param {String} profileId - owner of this message
    */
 
-  sendMessage = async (message, roomId, profileId, publicKey) => {
+  sendMessage = async (message, roomId, profileId) => {
     let encapsulated = await encapsulator(
       {
         room: roomId,
         message: message,
         owner: profileId,
       },
-      publicKey
     );
     this.socket.emit("client-sending-message", encapsulated);
     console.log("SENT");

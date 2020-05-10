@@ -48,7 +48,6 @@ export const encapsulator = async (content, publicKey) => {
 };
 
 const decryptPassphrase = (passphrase, privateKey) => {
-  console.log(passphrase)
   privateKey = forge.pki.privateKeyFromPem(privateKey);
   let decrypted = privateKey.decrypt(forge.util.decode64(passphrase), "RSA-OAEP");
   return decrypted;

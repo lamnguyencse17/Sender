@@ -164,7 +164,6 @@ class Messaging extends Component {
             inputValue,
             id,
             this.state.profile.id,
-            this.state.roomList[id].publicKey
           );
         }
       });

@@ -11,33 +11,19 @@ export const roomSchema = new Rooms({
   title: String,
   participants: [{ type: ObjectId, ref: "User" }],
   messages: [messageSchema],
-  publicKey: { type: String, default: "" },
-  privateKey: { type: String, default: "" },
 });
 
 roomSchema.statics.newRoom = async function (title, participants = []) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     for (index in participants) {
       participants[index] = mongoose.Types.ObjectId(participants[index]);
     }
-    generateKeyPair().then(async (keyPair, err) => {
-      if (err) {
-        reject(err);
-      } else {
         let result = await this.create({
           title,
           participants,
           messsages: [],
-          publicKey: encrypt(keyPair.publicKey).encrypted,
-          privateKey: encrypt(keyPair.privateKey).encrypted,
         });
-        resolve({
-          ...result,
-          publicKey: keyPair.publicKey,
-          privateKey: keyPair.privateKey,
-        });
-      }
-    });
+        resolve(result);
   });
 };
 

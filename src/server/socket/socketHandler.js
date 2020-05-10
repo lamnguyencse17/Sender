@@ -29,7 +29,6 @@ class socketHandler {
         [room._id]: {
           title: room.title,
           participants: room.participants,
-          publicKey: room.publicKey,
         },
       };
       socket.join(room._id);
