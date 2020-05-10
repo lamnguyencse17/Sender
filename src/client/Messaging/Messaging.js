@@ -6,7 +6,7 @@ import socketHandler from "../Socket/socketHandler";
 import MessageAreaContainer from "./MessageArea/MessageAreaContainer";
 import PropTypes from "prop-types";
 import Auth from "../Auth/Auth";
-import { decapsulation, validatePrivateKey } from "../Crypto/crypto";
+import { decapsulator, validatePrivateKey, validatePublicKey } from "../Crypto/crypto";
 import PrivateInput from "./PrivateInput";
 
 const ENDPOINT = "http://127.0.0.1:3000";
@@ -75,10 +75,12 @@ class Messaging extends Component {
       });
     });
     this.socket.on("provide-key", async (data) => {
-      let { publicKey } = await decapsulation(data);
+      let { publicKey } = await decapsulator(data);
+      validatePublicKey(publicKey)
       sessionStorage.setItem("serverPublicKey", publicKey);
     });
-    this.socket.on("subscribed-to", (rooms) => {
+    this.socket.on("subscribed-to", async (rooms) => {
+      rooms = await decapsulator(rooms);
       // rooms: {id: title}
       let { defaultRoom, newRoom } = this.socketObj.subscribedRoom(rooms);
       this.setState({
@@ -87,10 +89,13 @@ class Messaging extends Component {
         roomList: { ...this.state.roomList, ...newRoom },
       });
     });
+    this.socket.on("disconnect", () => {
+      this.socket.close();
+    });
     this.socket.on(
       "sync-messages",
-      (data) => {
-        console.log(data);
+      async (data) => {
+        data = await decapsulator(data);
         // data: {date, message, owner, room}
         let { returnedToState, target } = this.socketObj.syncingMessages(
           data,
@@ -112,8 +117,12 @@ class Messaging extends Component {
       },
       []
     );
-    this.socket.on("incoming-message", (data) => {
+    this.socket.on("incoming-message", async (data) => {
+      console.log(data);
+      data = decapsulator(data);
+      // change to use room public key by using default
       // data: {id, message, owner, room}
+
       let { id, message, owner, room, date } = data;
       let target = null;
       for (let room in this.state.roomList) {
@@ -151,7 +160,12 @@ class Messaging extends Component {
     if (inputValue.length > 0) {
       Object.keys(this.state.roomList).forEach((id) => {
         if (this.state.roomList[id].title == this.state.activeTab) {
-          this.socketObj.sendMessage(inputValue, id, this.state.profile.id);
+          this.socketObj.sendMessage(
+            inputValue,
+            id,
+            this.state.profile.id,
+            this.state.roomList[id].publicKey
+          );
         }
       });
     }
@@ -210,30 +224,36 @@ class Messaging extends Component {
           open={!this.state.privateKeyAvailable}
           closeModal={this.closePrivateInput}
         />
-        <div className="message-area">
-          <MessageAreaContainer
-            activeTab={activeTab}
-            profile={profile}
-            roomList={roomList}
-          />
-          <TextInput
-            updateText={this.updateText}
-            sendMessage={this.sendMessage}
-            typing={typing}
-            handleFileSelect={this.handleFileSelect}
-          />
-        </div>
-        <div className="active-bar">
-          {Object.keys(roomList).length !== 0 &&
-          roomList.constructor === Object ? (
-            <ActiveBar
-              room={Object.values(roomList).map((room) => room.title)}
-              setActiveTab={this.setActiveTab}
-            />
-          ) : (
-            <></>
-          )}
-        </div>
+        {this.state.privateKeyAvailable ? (
+          <>
+            <div className="message-area">
+              <MessageAreaContainer
+                activeTab={activeTab}
+                profile={profile}
+                roomList={roomList}
+              />
+              <TextInput
+                updateText={this.updateText}
+                sendMessage={this.sendMessage}
+                typing={typing}
+                handleFileSelect={this.handleFileSelect}
+              />
+            </div>
+            <div className="active-bar">
+              {Object.keys(roomList).length !== 0 &&
+              roomList.constructor === Object ? (
+                <ActiveBar
+                  room={Object.values(roomList).map((room) => room.title)}
+                  setActiveTab={this.setActiveTab}
+                />
+              ) : (
+                <></>
+              )}
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     );
   }

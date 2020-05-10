@@ -55,6 +55,20 @@ roomSchema.statics.getSubscribedRoom = function (participant) {
     });
 };
 
+roomSchema.statics.getRoomPublicKey = function (roomId) {
+  return this.findOne({
+    _id: mongoose.Types.ObjectId(roomId),
+  })
+    .select("publicKey")
+    .then((publicKey, err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        return publicKey;
+      }
+    });
+};
+
 roomSchema.statics.isUserInRoom = async function (roomId, userId) {
   return await this.exists({
     _id: mongoose.Types.ObjectId(roomId),

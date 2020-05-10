@@ -5,43 +5,54 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 import { writeToGridFS } from "../models/gridfs";
-import { broadcastToRoom } from "../socket/socketio";
-import { encapsulation } from "../helpers/cryptography";
+import { broadcastToRoom, getRoom, addToSocketMap } from "../socket/socketio";
+import { encapsulator, decapsulator } from "../helpers/cryptography";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 class socketHandler {
   constuctor() {
     this.socket = null;
-    this.io = null;
     this.id = null;
+    this.publicKey = null;
   }
-  setSocket = async (io, socket) => {
-    this.io = io;
+  setSocket = async (socket) => {
     this.socket = socket;
     this.id = socket.handshake.query["id"];
+    addToSocketMap(socket.handshake.query["id"], socket.id);
+    this.publicKey = await userModel.getPublicKey(this.id);
     console.log(`New client connected ${this.id}`);
     let rooms = await roomModel.getSubscribedRoom(this.id);
     let subscribedRooms = {};
     rooms.forEach((room) => {
       subscribedRooms = {
         ...subscribedRooms,
-        [room._id]: { title: room.title, participants: room.participants },
+        [room._id]: {
+          title: room.title,
+          participants: room.participants,
+          publicKey: room.publicKey,
+        },
       };
       socket.join(room._id);
     });
-    socket.emit("subscribed-to", subscribedRooms);
-    rooms.forEach((room) => {
+    let encapsulated = await encapsulator(subscribedRooms, this.publicKey);
+    socket.emit("subscribed-to", encapsulated);
+    rooms.forEach(async (room) => {
       if (room.messages.length != 0) {
-        socket.emit("sync-messages", lastMessages(room.messages, 5));
+        encapsulated = await encapsulator(
+          lastMessages(room.messages, 5),
+          this.publicKey
+        );
+        socket.emit("sync-messages", encapsulated);
       }
     });
   };
   providePublicKey = async () => {
-    let encrypted = await encapsulation(
+    // this.publicKey is not here yet! but it should be fine.
+    let encapsulated = await encapsulator(
       { publicKey: process.env.PUBLIC_KEY },
       await userModel.getPublicKey(this.id)
     );
-    this.socket.emit("provide-key", encrypted);
+    this.socket.emit("provide-key", encapsulated);
   };
   onClientSendingFile = async (fileObj) => {
     fileObj.name = path.parse(fileObj.name).name;
@@ -69,7 +80,8 @@ class socketHandler {
     // flow: get file -> write to gridfs -> make a link -> return a link -> encode as message with file name
     // model: collect filedata, file
   };
-  onClientSendingMessage = (message) => {
+  onClientSendingMessage = async (message) => {
+    message = await decapsulator(message);
     let newMessage = new messageModel({
       message: message.message,
       owner: mongoose.Types.ObjectId(message.owner),
@@ -80,13 +92,16 @@ class socketHandler {
         console.log(err);
         return;
       } else {
-        broadcastToRoom({
-          id: product._id,
-          message: product.message,
-          owner: product.owner,
-          date: product.date,
-          room: product.room,
-        });
+        broadcastToRoom(
+          {
+            id: product._id,
+            message: product.message,
+            owner: product.owner,
+            date: product.date,
+            room: product.room,
+          },
+          this.id
+        );
       }
     });
   };
@@ -103,7 +118,7 @@ class socketHandler {
 }
 
 const lastMessages = (messageList, n) => {
-  if (messageList == null) return void 0;
+  if (messageList == null) return {};
   if (n == null) return messageList[messageList.length - 1];
   return messageList.slice(Math.max(messageList.length - n, 0));
 };

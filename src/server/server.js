@@ -9,6 +9,7 @@ import socketHandler from "./socket/socketHandler";
 import checkJwt from "./helpers/checkJwt";
 import { setio } from "./socket/socketio";
 import morgan from "morgan";
+import forge from "node-forge";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 mongoose.connect(process.env.DATA_URI, { useNewUrlParser: true });
@@ -22,9 +23,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const server = http.createServer(app);
 const io = setio(server);
 
+forge.pki.privateKeyFromPem(process.env.PRIVATE_KEY);
+
 io.on("connection", async (socket) => {
   let socketObj = new socketHandler();
-  socketObj.setSocket(io, socket);
+  socketObj.setSocket(socket);
   socketObj.providePublicKey();
   socket.on("client-sending-message", (message) => {
     socketObj.onClientSendingMessage(message);

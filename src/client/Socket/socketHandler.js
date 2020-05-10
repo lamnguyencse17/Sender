@@ -1,3 +1,5 @@
+import { encapsulator } from "../Crypto/crypto";
+
 /**
  * @class
  * Create a socketHandler Object to be passed around
@@ -48,6 +50,7 @@ class socketHandler {
         ...newRoom,
         [id]: {
           title: rooms[id].title,
+          publicKey: rooms[id].publicKey,
           participants: rooms[id].participants.reduce(
             (obj, item) => ((obj[item._id] = item), obj),
             {}
@@ -94,12 +97,16 @@ class socketHandler {
    * @param {String} profileId - owner of this message
    */
 
-  sendMessage = (message, roomId, profileId) => {
-    this.socket.emit("client-sending-message", {
-      room: roomId,
-      message: message,
-      owner: profileId,
-    });
+  sendMessage = async (message, roomId, profileId, publicKey) => {
+    let encapsulated = await encapsulator(
+      {
+        room: roomId,
+        message: message,
+        owner: profileId,
+      },
+      publicKey
+    );
+    this.socket.emit("client-sending-message", encapsulated);
     console.log("SENT");
   };
 }
