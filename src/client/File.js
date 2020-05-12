@@ -2,9 +2,8 @@ import React, { PureComponent } from "react";
 import Loading from "./Common/Loading";
 import axios from "axios";
 import mime from "mime-types";
-import { fileDecapsulator } from "./Crypto/crypto";
+import { fileDecapsulator, validatePrivateKey } from "./Crypto/crypto";
 import PrivateInput from "./Messaging/PrivateInput";
-import {validatePrivateKey} from "./Crypto/crypto"
 
 export default class File extends PureComponent {
   constructor(props) {
@@ -27,8 +26,7 @@ export default class File extends PureComponent {
     });
     axios
       .get(
-        // `${process.env.AUTH0_AUDIENCE}/api/protected/file/${this.props.match.params.filename}`,
-        `http://localhost:3000/`,
+        `${process.env.AUTH0_AUDIENCE}/api/protected/file/${this.props.match.params.filename}`,
         {
           headers: {
             "Content-Type": "application/json",
