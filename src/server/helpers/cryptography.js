@@ -47,6 +47,23 @@ export const encapsulator = async (content, publicKey) => {
   };
 };
 
+export const fileEncapsulator = async (fileByte, publicKey) => {
+  // fileByte read from outside
+  let passphrase = await randomString();
+  let iv = await randomString();
+  let cipher = forge.cipher.createCipher("AES-CBC", passphrase);
+  cipher.start({ iv });
+  cipher.update(forge.util.createBuffer(fileByte));
+  cipher.finish();
+  let newPassphrase = await encryptPassphrase(passphrase, publicKey);
+  return {data: Buffer.from(cipher.output.getBytes(), 'binary'), iv: bytesToHex(iv), passphrase: newPassphrase }
+  // let decipher = forge.cipher.createDecipher("AES-CBC", passphrase)
+  // decipher.start({iv})
+  // decipher.update(cipher.output)
+  // decipher.finish()
+  // console.log(Buffer.from(decipher.output.getBytes(), 'binary'))
+}
+
 const decryptPassphrase = (passphrase, privateKey) => {
   privateKey = forge.pki.privateKeyFromPem(privateKey);
   let decrypted = privateKey.decrypt(forge.util.decode64(passphrase), "RSA-OAEP");

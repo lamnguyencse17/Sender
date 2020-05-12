@@ -9,6 +9,28 @@ export const validatePrivateKey = (privateKey) => {
   return true;
 };
 
+export const fileDecapsulator = async (data, iv, passphrase) => {
+  // fileByte read from outside
+  // let passphrase = await randomString();
+  // let iv = await randomString();
+  // let cipher = forge.cipher.createCipher("AES-CBC", passphrase);
+  // cipher.start({ iv });
+  // cipher.update(forge.util.createBuffer(fileByte));
+  // cipher.finish();
+  // let newPassphrase = await encryptPassphrase(passphrase, publicKey);
+  // return {data: Buffer.from(cipher.output.getBytes(), 'binary'), iv: bytesToHex(iv), passphrase: newPassphrase }
+  console.log(data)
+  data = forge.util.createBuffer(data, "raw");
+  let privateKey = sessionStorage.getItem("privateKey");
+  passphrase = decryptPassphrase(passphrase, privateKey);
+  iv = forge.util.hexToBytes(iv)
+  let decipher = forge.cipher.createDecipher("AES-CBC", passphrase)
+  decipher.start({iv})
+  decipher.update(data)
+  decipher.finish()
+  return Buffer.from(decipher.output.getBytes(), 'binary')
+}
+
 export const validatePublicKey = (publicKey) => {
   try {
     forge.pki.publicKeyFromPem(publicKey);

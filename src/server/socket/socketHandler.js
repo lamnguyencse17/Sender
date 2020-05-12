@@ -46,7 +46,6 @@ class socketHandler {
     });
   };
   providePublicKey = async () => {
-    // this.publicKey is not here yet! but it should be fine.
     let encapsulated = await encapsulator(
       { publicKey: process.env.PUBLIC_KEY },
       await userModel.getPublicKey(this.id)
@@ -54,6 +53,7 @@ class socketHandler {
     this.socket.emit("provide-key", encapsulated);
   };
   onClientSendingFile = async (fileObj) => {
+    console.log(fileObj)
     fileObj.name = path.parse(fileObj.name).name;
     writeToGridFS(fileObj).then(async (result, err) => {
       if (err) {
