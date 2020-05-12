@@ -184,13 +184,14 @@ class Messaging extends Component {
     selector.click();
   };
   logChange = async (e) => {
-    let file = e.target.files[0];   
+    let file = e.target.files[0];
+    let {name, type} = file
     file = await fileEncapsulator(e.target.files[0])
     Object.keys(this.state.roomList).forEach((id) => {
       if (this.state.roomList[id].title == this.state.activeTab) {
         this.socket.emit("sending-file", {
-          name: file.name,
-          type: file.type,
+          name,
+          type,
           owner: this.state.profile.id,
           room: id,
           ...file

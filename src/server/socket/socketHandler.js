@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { writeToGridFS } from "../models/gridfs";
 import { broadcastToRoom, getRoom, addToSocketMap } from "../socket/socketio";
-import { encapsulator, decapsulator } from "../helpers/cryptography";
+import { encapsulator, decapsulator, fileDecapsulator } from "../helpers/cryptography";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 class socketHandler {
@@ -53,7 +53,8 @@ class socketHandler {
     this.socket.emit("provide-key", encapsulated);
   };
   onClientSendingFile = async (fileObj) => {
-    console.log(fileObj)
+    let result = await fileDecapsulator(fileObj.data, fileObj.iv, fileObj.passphrase)
+    fileObj.data = result
     fileObj.name = path.parse(fileObj.name).name;
     writeToGridFS(fileObj).then(async (result, err) => {
       if (err) {

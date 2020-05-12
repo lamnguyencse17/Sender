@@ -47,6 +47,18 @@ export const encapsulator = async (content, publicKey) => {
   };
 };
 
+export const fileDecapsulator = async (data, iv, passphrase) => {
+  data = forge.util.createBuffer(data, "raw");
+  let privateKey = process.env.PRIVATE_KEY
+  passphrase = decryptPassphrase(passphrase, privateKey);
+  iv = forge.util.hexToBytes(iv)
+  let decipher = forge.cipher.createDecipher("AES-CBC", passphrase)
+  decipher.start({iv})
+  decipher.update(data)
+  decipher.finish()
+  return Buffer.from(decipher.output.getBytes(), 'binary')
+}
+
 export const fileEncapsulator = async (fileByte, publicKey) => {
   // fileByte read from outside
   let passphrase = await randomString();
