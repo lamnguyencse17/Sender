@@ -6,7 +6,7 @@ import socketHandler from "../Socket/socketHandler";
 import MessageAreaContainer from "./MessageArea/MessageAreaContainer";
 import PropTypes from "prop-types";
 import Auth from "../Auth/Auth";
-import { decapsulator, validatePrivateKey, validatePublicKey } from "../Crypto/crypto";
+import { decapsulator, validatePrivateKey, validatePublicKey, fileEncapsulator } from "../Crypto/crypto";
 import PrivateInput from "./PrivateInput";
 
 const ENDPOINT = "http://127.0.0.1:3000";
@@ -179,13 +179,13 @@ class Messaging extends Component {
   // split to file handling later
   handleFileSelect = (e) => {
     e.preventDefault();
-    let test = this.buildFileSelector();
-    test.onchange = this.logChange;
-    test.click();
+    let selector = this.buildFileSelector();
+    selector.onchange = this.logChange;
+    selector.click();
   };
-  logChange = (e) => {
-    let file = e.target.files[0];
-    console.log(file);
+  logChange = async (e) => {
+    let file = e.target.files[0];   
+    file = await fileEncapsulator(e.target.files[0])
     Object.keys(this.state.roomList).forEach((id) => {
       if (this.state.roomList[id].title == this.state.activeTab) {
         this.socket.emit("sending-file", {
@@ -193,7 +193,7 @@ class Messaging extends Component {
           type: file.type,
           owner: this.state.profile.id,
           room: id,
-          data: e.target.files[0],
+          ...file
         });
       }
     });

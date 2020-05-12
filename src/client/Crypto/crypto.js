@@ -10,16 +10,6 @@ export const validatePrivateKey = (privateKey) => {
 };
 
 export const fileDecapsulator = async (data, iv, passphrase) => {
-  // fileByte read from outside
-  // let passphrase = await randomString();
-  // let iv = await randomString();
-  // let cipher = forge.cipher.createCipher("AES-CBC", passphrase);
-  // cipher.start({ iv });
-  // cipher.update(forge.util.createBuffer(fileByte));
-  // cipher.finish();
-  // let newPassphrase = await encryptPassphrase(passphrase, publicKey);
-  // return {data: Buffer.from(cipher.output.getBytes(), 'binary'), iv: bytesToHex(iv), passphrase: newPassphrase }
-  console.log(data)
   data = forge.util.createBuffer(data, "raw");
   let privateKey = sessionStorage.getItem("privateKey");
   passphrase = decryptPassphrase(passphrase, privateKey);
@@ -29,6 +19,20 @@ export const fileDecapsulator = async (data, iv, passphrase) => {
   decipher.update(data)
   decipher.finish()
   return Buffer.from(decipher.output.getBytes(), 'binary')
+}
+
+export const fileEncapsulator = async (file) => {
+    // fileByte read from outside
+  file = await file.arrayBuffer().then(buffer => {return buffer})
+  let passphrase = await randomString();
+  let iv = await randomString();
+  let cipher = forge.cipher.createCipher("AES-CBC", passphrase);
+  cipher.start({ iv });
+  cipher.update(forge.util.createBuffer(file));
+  cipher.finish();
+  let publicKey = sessionStorage.getItem("serverPublicKey")
+  let newPassphrase = await encryptPassphrase(passphrase, forge.pki.publicKeyFromPem(publicKey));
+  return {data: Buffer.from(cipher.output.getBytes(), 'binary'), iv: forge.util.bytesToHex(iv), passphrase: newPassphrase }
 }
 
 export const validatePublicKey = (publicKey) => {
@@ -95,7 +99,6 @@ const encryptPassphrase = (passphrase, publicKey) => {
 export const encapsulator = async (
   content,
 ) => {
-  console.log(sessionStorage.getItem("serverPublicKey"))
   let publicKey = forge.pki.publicKeyFromPem(sessionStorage.getItem("serverPublicKey"))
   let passphrase = await randomString();
   let iv = await randomString();
