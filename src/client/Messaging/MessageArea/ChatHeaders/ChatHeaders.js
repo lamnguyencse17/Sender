@@ -9,7 +9,7 @@ class ChatHeaders extends Component {
       <div className="chat-header">
         <p>{activeTab}</p>
         <div className="options">
-          <ChatMenu participants={this.props.participants} />
+          <ChatMenu participants={this.props.participants} roomId={this.props.roomId} updateOnUserLeave={this.props.updateOnUserLeave}/>
         </div>
       </div>
     );

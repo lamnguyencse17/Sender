@@ -59,13 +59,20 @@ export default class Generation extends Component {
         {this.state ? (
           <div>
             {this.state.publicKey} <br></br> {this.state.privateKey} <br></br>{" "}
-            <Link to="/messaging">Move to Messaging</Link>
+            <Link to={{
+              pathname: "/messaging",
+              state: {
+                ...this.props.location.state
+              }
+            }} > Move to Messaging</Link>
           </div>
         ) : (
-          <>
-            <button onClick={this.handleGeneration}>Generate KeyPair</button>
-          </>
-        )}
+            <>
+              <h1> Please keep the private key somewhere safe</h1>
+              <h1> If you have already generated the keypair, this option will update with the new one</h1>
+              <button onClick={this.handleGeneration}>Generate KeyPair</button>
+            </>
+          )}
       </div>
     );
   }

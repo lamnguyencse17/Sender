@@ -41,6 +41,16 @@ roomSchema.statics.getSubscribedRoom = function (participant) {
     });
 };
 
+roomSchema.statics.userLeave = async function (roomId, userId) {
+  return await this.findOneAndUpdate({
+    room: mongoose.Types.ObjectId(roomId)
+  }, {
+    $pull: {
+      participants: mongoose.Types.ObjectId(userId)
+    }
+  })
+}
+
 roomSchema.statics.getRoomPublicKey = function (roomId) {
   return this.findOne({
     _id: mongoose.Types.ObjectId(roomId),

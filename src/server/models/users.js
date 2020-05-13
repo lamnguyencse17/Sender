@@ -29,10 +29,10 @@ userSchema.statics.isRegistered = async function (user) {
       if (err) {
         console.log("Something wrong when updating data!");
       }
-      return doc;
+      return {...doc, newUser: true};
     }
   );
-  return result;
+  return {...result, newUser: false};
 };
 userSchema.statics.getName = async function (userId) {
   return await this.findOne({ _id: userId }).select("name -_id");

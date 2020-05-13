@@ -28,9 +28,6 @@ const io = setio(server);
 
 forge.pki.privateKeyFromPem(process.env.PRIVATE_KEY);
 
-
-
-
 io.on("connection", async (socket) => {
   let socketObj = new socketHandler();
   socketObj.setSocket(socket);
@@ -41,6 +38,7 @@ io.on("connection", async (socket) => {
   socket.on("disconnect", () => socketObj.onDisconnect());
   socket.on("error", (err) => socketObj.onError(err));
   socket.on("sending-file", (data) => socketObj.onClientSendingFile(data));
+  socket.on("client-leave-room", (roomId) => {socketObj.onLeave(roomId)})
 });
 
 server.listen(SERVER_PORT, async () => {
@@ -48,7 +46,3 @@ server.listen(SERVER_PORT, async () => {
 });
 
 app.use("/api/protected/", checkJwt, require("./routes/routes"));
-
-app.get("/", (req, res) => {
-  
-})

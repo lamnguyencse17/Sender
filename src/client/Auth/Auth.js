@@ -53,14 +53,21 @@ export default class Auth {
                 } else {
                   this.setSession(authResult, value.data);
                   this.userProfile = value.data;
-                  setTimeout(
-                    () =>
-                      this.history.push({
-                        pathname: "/messaging",
-                        state: { ...value.data },
-                      }),
-                    1000
-                  );
+                  if (!value.data.newUser) {
+                    setTimeout(
+                      () =>
+                        this.history.push({
+                          pathname: "/messaging",
+                          state: { ...value.data },
+                        }),
+                      1000
+                    );
+                  } else {
+                    this.history.push({
+                      path: "/generation",
+                      state: {...value.data}
+                    })
+                  }
                 }
               });
           } else {

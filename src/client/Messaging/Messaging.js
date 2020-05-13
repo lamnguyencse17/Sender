@@ -118,7 +118,6 @@ class Messaging extends Component {
       []
     );
     this.socket.on("incoming-message", async (data) => {
-      console.log(data);
       data = decapsulator(data);
       // change to use room public key by using default
       // data: {id, message, owner, room}
@@ -216,6 +215,15 @@ class Messaging extends Component {
       });
     }
   };
+  updateOnUserLeave = (roomId) => {
+    this.socketObj.leaveRoom(roomId)
+    let newRoom = {...this.state.roomList}
+    delete newRoom[roomId]
+    this.setState({
+      ...this.state,
+      roomList: newRoom
+    })
+  }
   render() {
     let { profile, roomList, activeTab, typing } = this.state;
     return (
@@ -231,6 +239,7 @@ class Messaging extends Component {
                 activeTab={activeTab}
                 profile={profile}
                 roomList={roomList}
+                updateOnUserLeave={this.updateOnUserLeave}
               />
               <TextInput
                 updateText={this.updateText}

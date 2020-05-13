@@ -115,6 +115,9 @@ class socketHandler {
     console.log("Socket.IO Error");
     console.log(err.stack);
   };
+  onLeave = (roomId) => {
+    this.socket.leave(roomId, this.id)
+  }
 }
 
 const lastMessages = (messageList, n) => {

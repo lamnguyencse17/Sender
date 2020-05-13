@@ -107,6 +107,11 @@ class socketHandler {
     this.socket.emit("client-sending-message", encapsulated);
     console.log("SENT");
   };
+  leaveRoom = async (roomId) => {
+    this.socket.emit("client-leave-room", roomId);
+    console.log("LEAVE")
+  }
+
 }
 
 export default socketHandler;

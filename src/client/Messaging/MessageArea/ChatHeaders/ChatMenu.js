@@ -4,7 +4,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ParticipantsModal from "./Modals/ParticipantsModal";
-
+import ConfirmationLeaveModal from "./Modals/ConfirmationLeave"
 const options = ["Show Participants", "Leave room"];
 
 const ITEM_HEIGHT = 48;
@@ -12,10 +12,12 @@ const ITEM_HEIGHT = 48;
 export default class LongMenu extends Component {
   constructor(props) {
     super(props);
+    console.log(this.props)
     this.state = {
       anchor: null,
       selected: null,
-      modal: false,
+      participantModal: false,
+      confirmationModal: false
     };
   }
   handleClick = (event) => {
@@ -24,18 +26,26 @@ export default class LongMenu extends Component {
   handleClose = () => {
     this.setState({ anchor: null });
   };
-  closeModal = () => {
-    this.setState({ ...this.state, modal: false });
+  closeParticipantModal = () => {
+    this.setState({ ...this.state, participantModal: false });
   };
+  closeConfirmationLeave = () => {
+    this.setState({ ... this.state, confirmationModal: false})
+  }
   render() {
     let { anchor } = this.state;
     return (
       <div>
         <ParticipantsModal
-          open={this.state.modal}
-          closeModal={this.closeModal}
+          open={this.state.participantModal}
+          closeModal={this.closeParticipantModal}
           participants={this.props.participants}
         />
+        <ConfirmationLeaveModal open={this.state.confirmationModal}
+          closeModal={this.closeConfirmationLeave}
+          roomId={this.props.roomId}
+          updateOnUserLeave={this.props.updateOnUserLeave}
+          />
         <IconButton
           aria-label="more"
           aria-controls="long-menu"
@@ -66,9 +76,13 @@ export default class LongMenu extends Component {
                   ? this.setState({
                       ...this.state,
                       selected: option,
-                      modal: true,
+                      participantModal: true,
                     })
-                  : this.setState({ ...this.state, selected: option })
+                  : this.setState({
+                    ...this.state,
+                    selected: option,
+                    confirmationModal: true,
+                  })
               }
             >
               {option}

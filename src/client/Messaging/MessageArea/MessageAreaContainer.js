@@ -19,6 +19,10 @@ class MessageAreaContainer extends Component {
                   )
                 ].participants
               }
+              roomId={
+                Object.keys(roomList).filter(id => roomList[id].title == activeTab)[0]
+              }
+              updateOnUserLeave={this.props.updateOnUserLeave}
             />
             <ChatLog
               log={
