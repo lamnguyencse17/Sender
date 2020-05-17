@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import { messageSchema } from "./messages";
 import userModel from "./users";
-import { generateKeyPair, encrypt, decrypt } from "../helpers/cryptography";
-import { resolveInclude } from "ejs";
 
 const Rooms = mongoose.Schema;
 const ObjectId = mongoose.Schema.Types.ObjectId;
@@ -42,13 +40,14 @@ roomSchema.statics.getSubscribedRoom = function (participant) {
 };
 
 roomSchema.statics.userLeave = async function (roomId, userId) {
-  return await this.findOneAndUpdate({
-    room: mongoose.Types.ObjectId(roomId)
+  await this.updateOne({
+    _id: mongoose.Types.ObjectId(roomId)
   }, {
     $pull: {
       participants: mongoose.Types.ObjectId(userId)
     }
   })
+  await userModel.removeRoom(userId, roomId)
 }
 
 roomSchema.statics.getRoomPublicKey = function (roomId) {

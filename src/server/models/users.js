@@ -29,10 +29,9 @@ userSchema.statics.isRegistered = async function (user) {
       if (err) {
         console.log("Something wrong when updating data!");
       }
-      return {...doc, newUser: true};
     }
   );
-  return {...result, newUser: false};
+  return {...result._doc, newUser: result.isNew};
 };
 userSchema.statics.getName = async function (userId) {
   return await this.findOne({ _id: userId }).select("name -_id");
@@ -52,6 +51,15 @@ userSchema.statics.setPublicKey = async function (userId, publicKey) {
     }
   });
 };
+userSchema.statics.removeRoom = async function (userId, roomId) {
+  return await this.updateOne({
+    _id: mongoose.Types.ObjectId(userId)
+  }, {
+    $pull: {
+      rooms: mongoose.Types.ObjectId(roomId)
+    }
+  })
+}
 userSchema.statics.getPublicKey = async function (userId) {
   let result = await this.findOne({
     _id: mongoose.Types.ObjectId(userId),

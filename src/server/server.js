@@ -10,12 +10,9 @@ import checkJwt from "./helpers/checkJwt";
 import { setio } from "./socket/socketio";
 import morgan from "morgan";
 import forge from "node-forge";
-import { getFileFromGridFS } from "./models/gridfs"
-import { fileEncapsulator } from "./helpers/cryptography";
-import { Readable } from "stream"
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
-mongoose.connect(process.env.DATA_URI, { useNewUrlParser: true });
+mongoose.connect(process.env.DATA_URI, { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true });
 const SERVER_PORT = 3000;
 const app = express();
 app.use(cors());

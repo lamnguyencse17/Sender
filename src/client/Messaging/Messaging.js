@@ -219,9 +219,11 @@ class Messaging extends Component {
     this.socketObj.leaveRoom(roomId)
     let newRoom = {...this.state.roomList}
     delete newRoom[roomId]
+    let activeTab = newRoom[Object.keys(newRoom)[0]].title
     this.setState({
       ...this.state,
-      roomList: newRoom
+      roomList: newRoom,
+      activeTab
     })
   }
   render() {

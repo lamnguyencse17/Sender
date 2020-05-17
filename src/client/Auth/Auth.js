@@ -53,6 +53,7 @@ export default class Auth {
                 } else {
                   this.setSession(authResult, value.data);
                   this.userProfile = value.data;
+                  console.log(value.data)
                   if (!value.data.newUser) {
                     setTimeout(
                       () =>

@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 import { writeToGridFS } from "../models/gridfs";
-import { broadcastToRoom, getRoom, addToSocketMap } from "../socket/socketio";
+import { broadcastToRoom, addToSocketMap } from "../socket/socketio";
 import { encapsulator, decapsulator, fileDecapsulator } from "../helpers/cryptography";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
@@ -18,6 +18,7 @@ class socketHandler {
   setSocket = async (socket) => {
     this.socket = socket;
     this.id = socket.handshake.query["id"];
+    console.log(socket.handshake.query["id"])
     addToSocketMap(socket.handshake.query["id"], socket.id);
     this.publicKey = await userModel.getPublicKey(this.id);
     console.log(`New client connected ${this.id}`);
@@ -116,7 +117,8 @@ class socketHandler {
     console.log(err.stack);
   };
   onLeave = (roomId) => {
-    this.socket.leave(roomId, this.id)
+    roomModel.userLeave(roomId, this.id)
+    this.socket.leave(roomId)
   }
 }
 
