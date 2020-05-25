@@ -97,21 +97,21 @@ class socketHandler {
    */
 
   sendMessage = async (message, roomId, profileId) => {
-    let encapsulated = await encapsulator(
-      {
-        room: roomId,
-        message: message,
-        owner: profileId,
-      },
-    );
+    let encapsulated = await encapsulator({
+      room: roomId,
+      message: message,
+      owner: profileId,
+    });
     this.socket.emit("client-sending-message", encapsulated);
     console.log("SENT");
   };
   leaveRoom = async (roomId) => {
     this.socket.emit("client-leave-room", roomId);
-    console.log("LEAVE")
-  }
-
+    console.log("LEAVE");
+  };
+  addNewRoom = (roomName) => {
+    this.socket.emit("client-add-new-room", roomName);
+  };
 }
 
 export default socketHandler;

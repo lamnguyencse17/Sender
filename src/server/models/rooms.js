@@ -8,7 +8,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 export const roomSchema = new Rooms({
   title: String,
   participants: [{ type: ObjectId, ref: "User" }],
-  messages: [messageSchema],
+  messages: { type: [messageSchema], default: [] },
 });
 
 roomSchema.statics.newRoom = async function (title, participants = []) {
@@ -16,12 +16,12 @@ roomSchema.statics.newRoom = async function (title, participants = []) {
     for (index in participants) {
       participants[index] = mongoose.Types.ObjectId(participants[index]);
     }
-        let result = await this.create({
-          title,
-          participants,
-          messsages: [],
-        });
-        resolve(result);
+    let result = await this.create({
+      title,
+      participants,
+      messsages: [],
+    });
+    resolve(result);
   });
 };
 
@@ -40,15 +40,18 @@ roomSchema.statics.getSubscribedRoom = function (participant) {
 };
 
 roomSchema.statics.userLeave = async function (roomId, userId) {
-  await this.updateOne({
-    _id: mongoose.Types.ObjectId(roomId)
-  }, {
-    $pull: {
-      participants: mongoose.Types.ObjectId(userId)
+  await this.updateOne(
+    {
+      _id: mongoose.Types.ObjectId(roomId),
+    },
+    {
+      $pull: {
+        participants: mongoose.Types.ObjectId(userId),
+      },
     }
-  })
-  await userModel.removeRoom(userId, roomId)
-}
+  );
+  await userModel.removeRoom(userId, roomId);
+};
 
 roomSchema.statics.getRoomPublicKey = function (roomId) {
   return this.findOne({
@@ -69,6 +72,15 @@ roomSchema.statics.isUserInRoom = async function (roomId, userId) {
     _id: mongoose.Types.ObjectId(roomId),
     participants: { $in: [mongoose.Types.ObjectId(userId)] },
   });
+};
+
+roomSchema.statics.addNewRoom = async function (roomName, userId) {
+  let result = await this.create({
+    title: roomName,
+    participants: [mongoose.Types.ObjectId(userId)],
+  });
+  userModel.addRoom(userId, result._id);
+  return result;
 };
 
 roomSchema.statics.addToRoom = async function (roomId, userId) {

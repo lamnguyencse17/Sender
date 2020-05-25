@@ -6,7 +6,11 @@ import dotenv from "dotenv";
 import path from "path";
 import { writeToGridFS } from "../models/gridfs";
 import { broadcastToRoom, addToSocketMap } from "../socket/socketio";
-import { encapsulator, decapsulator, fileDecapsulator } from "../helpers/cryptography";
+import {
+  encapsulator,
+  decapsulator,
+  fileDecapsulator,
+} from "../helpers/cryptography";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 class socketHandler {
@@ -18,7 +22,7 @@ class socketHandler {
   setSocket = async (socket) => {
     this.socket = socket;
     this.id = socket.handshake.query["id"];
-    console.log(socket.handshake.query["id"])
+    console.log(socket.handshake.query["id"]);
     addToSocketMap(socket.handshake.query["id"], socket.id);
     this.publicKey = await userModel.getPublicKey(this.id);
     console.log(`New client connected ${this.id}`);
@@ -54,8 +58,12 @@ class socketHandler {
     this.socket.emit("provide-key", encapsulated);
   };
   onClientSendingFile = async (fileObj) => {
-    let result = await fileDecapsulator(fileObj.data, fileObj.iv, fileObj.passphrase)
-    fileObj.data = result
+    let result = await fileDecapsulator(
+      fileObj.data,
+      fileObj.iv,
+      fileObj.passphrase
+    );
+    fileObj.data = result;
     fileObj.name = path.parse(fileObj.name).name;
     writeToGridFS(fileObj).then(async (result, err) => {
       if (err) {
@@ -117,9 +125,35 @@ class socketHandler {
     console.log(err.stack);
   };
   onLeave = (roomId) => {
-    roomModel.userLeave(roomId, this.id)
-    this.socket.leave(roomId)
-  }
+    roomModel.userLeave(roomId, this.id);
+    this.socket.leave(roomId);
+  };
+  onClientAddNewRoom = async (roomName) => {
+    let result = await roomModel.addNewRoom(roomName, this.id);
+    this.socket.join(result._id);
+    let rooms = await roomModel.getSubscribedRoom(this.id);
+    let subscribedRooms = {};
+    rooms.forEach((room) => {
+      subscribedRooms = {
+        ...subscribedRooms,
+        [room._id]: {
+          title: room.title,
+          participants: room.participants,
+        },
+      };
+    });
+    let encapsulated = await encapsulator(subscribedRooms, this.publicKey);
+    this.socket.emit("subscribed-to", encapsulated);
+    rooms.forEach(async (room) => {
+      if (room.messages.length != 0) {
+        encapsulated = await encapsulator(
+          lastMessages(room.messages, 5),
+          this.publicKey
+        );
+        this.socket.emit("sync-messages", encapsulated);
+      }
+    });
+  };
 }
 
 const lastMessages = (messageList, n) => {

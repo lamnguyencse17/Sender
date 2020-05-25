@@ -6,10 +6,15 @@ import socketHandler from "../Socket/socketHandler";
 import MessageAreaContainer from "./MessageArea/MessageAreaContainer";
 import PropTypes from "prop-types";
 import Auth from "../Auth/Auth";
-import { decapsulator, validatePrivateKey, validatePublicKey, fileEncapsulator } from "../Crypto/crypto";
+import {
+  decapsulator,
+  validatePrivateKey,
+  validatePublicKey,
+  fileEncapsulator,
+} from "../Crypto/crypto";
 import PrivateInput from "./PrivateInput";
 
-const ENDPOINT = "http://127.0.0.1:3000";
+const ENDPOINT = "http://localhost:3000";
 class Messaging extends Component {
   constructor(props) {
     super(props);
@@ -76,11 +81,12 @@ class Messaging extends Component {
     });
     this.socket.on("provide-key", async (data) => {
       let { publicKey } = await decapsulator(data);
-      validatePublicKey(publicKey)
+      validatePublicKey(publicKey);
       sessionStorage.setItem("serverPublicKey", publicKey);
     });
     this.socket.on("subscribed-to", async (rooms) => {
       rooms = await decapsulator(rooms);
+      console.log(rooms);
       // rooms: {id: title}
       let { defaultRoom, newRoom } = this.socketObj.subscribedRoom(rooms);
       this.setState({
@@ -159,11 +165,7 @@ class Messaging extends Component {
     if (inputValue.length > 0) {
       Object.keys(this.state.roomList).forEach((id) => {
         if (this.state.roomList[id].title == this.state.activeTab) {
-          this.socketObj.sendMessage(
-            inputValue,
-            id,
-            this.state.profile.id,
-          );
+          this.socketObj.sendMessage(inputValue, id, this.state.profile.id);
         }
       });
     }
@@ -184,8 +186,8 @@ class Messaging extends Component {
   };
   logChange = async (e) => {
     let file = e.target.files[0];
-    let {name, type} = file
-    file = await fileEncapsulator(e.target.files[0])
+    let { name, type } = file;
+    file = await fileEncapsulator(e.target.files[0]);
     Object.keys(this.state.roomList).forEach((id) => {
       if (this.state.roomList[id].title == this.state.activeTab) {
         this.socket.emit("sending-file", {
@@ -193,7 +195,7 @@ class Messaging extends Component {
           type,
           owner: this.state.profile.id,
           room: id,
-          ...file
+          ...file,
         });
       }
     });
@@ -211,21 +213,25 @@ class Messaging extends Component {
     let privateKey = sessionStorage.getItem("privateKey");
     if (privateKey && validatePrivateKey(privateKey)) {
       this.setState({
+        ...this.state,
         privateKeyAvailable: true,
       });
     }
   };
   updateOnUserLeave = (roomId) => {
-    this.socketObj.leaveRoom(roomId)
-    let newRoom = {...this.state.roomList}
-    delete newRoom[roomId]
-    let activeTab = newRoom[Object.keys(newRoom)[0]].title
+    this.socketObj.leaveRoom(roomId);
+    let newRoom = { ...this.state.roomList };
+    delete newRoom[roomId];
+    let activeTab = newRoom[Object.keys(newRoom)[0]].title;
     this.setState({
       ...this.state,
       roomList: newRoom,
-      activeTab
-    })
-  }
+      activeTab,
+    });
+  };
+  addNewRoom = (roomName) => {
+    this.socketObj.addNewRoom(roomName);
+  };
   render() {
     let { profile, roomList, activeTab, typing } = this.state;
     return (
@@ -256,6 +262,7 @@ class Messaging extends Component {
                 <ActiveBar
                   room={Object.values(roomList).map((room) => room.title)}
                   setActiveTab={this.setActiveTab}
+                  addNewRoom={this.addNewRoom}
                 />
               ) : (
                 <></>

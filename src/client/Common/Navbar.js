@@ -15,7 +15,7 @@ class Navbar extends Component {
         <nav>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/messaging">Messaging</Link>
             </li>
             <li>
               {isAuthenticated() ? (
