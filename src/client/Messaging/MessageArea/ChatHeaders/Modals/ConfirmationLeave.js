@@ -6,12 +6,11 @@ export default class PrivateInput extends Component {
     super(props);
   }
   handleLeave = () => {
-      // get leave socket
-      // set new state
-      this.props.updateOnUserLeave(this.props.roomId)
-      
-      this.props.closeModal()
-  }
+    // get leave socket
+    // set new state
+    this.props.updateOnUserLeave(this.props.roomId);
+    this.props.closeModal();
+  };
   render() {
     return (
       <>
@@ -22,7 +21,7 @@ export default class PrivateInput extends Component {
           aria-describedby="simple-modal-description"
         >
           <div className="modal-center">
-              <h1> Are you sure that you want to leave this room? </h1>
+            <h1> Are you sure that you want to leave this room? </h1>
             <br></br>
             <button onClick={this.handleLeave}>YES</button>
             <button onClick={this.props.closeModal}>NO</button>

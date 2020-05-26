@@ -6,41 +6,27 @@ import PropTypes from "prop-types";
 class MessageAreaContainer extends Component {
   render() {
     let { activeTab, roomList, profile } = this.props;
+    let participants, log, roomId;
+    if (activeTab) {
+      let targetRoom =
+        roomList[
+          Object.keys(roomList).filter((id) => roomList[id].title == activeTab)
+        ];
+      participants = targetRoom.participants;
+      log = targetRoom.messages;
+      roomId = targetRoom[0];
+    }
     return (
       <>
         {activeTab ? (
           <>
             <ChatHeaders
               activeTab={activeTab}
-              participants={
-                roomList[
-                  Object.keys(roomList).filter(
-                    (id) => roomList[id].title == activeTab
-                  )
-                ].participants
-              }
-              roomId={
-                Object.keys(roomList).filter(id => roomList[id].title == activeTab)[0]
-              }
+              participants={participants}
+              roomId={roomId}
               updateOnUserLeave={this.props.updateOnUserLeave}
             />
-            <ChatLog
-              log={
-                roomList[
-                  Object.keys(roomList).filter(
-                    (id) => roomList[id].title == activeTab
-                  )
-                ].messages
-              }
-              profile={profile}
-              participants={
-                roomList[
-                  Object.keys(roomList).filter(
-                    (id) => roomList[id].title == activeTab
-                  )
-                ].participants
-              }
-            />
+            <ChatLog log={log} profile={profile} participants={participants} />
           </>
         ) : (
           <></>

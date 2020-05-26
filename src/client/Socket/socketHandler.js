@@ -27,7 +27,6 @@ class socketHandler {
    */
   subscribedRoom = (rooms) => {
     // rooms: {id: {title: participants}}
-    //FIXME: the keys "id" is coming from nowhere!
     /**
      * @type {string}
      */
@@ -40,11 +39,7 @@ class socketHandler {
      * @property {Object} id.messages
      */
     let newRoom = {};
-    //TEMP FIX:
     for (let id in rooms) {
-      rooms[id].participants.forEach((participant) => {
-        delete participant.id;
-      });
       // key = id
       newRoom = {
         ...newRoom,

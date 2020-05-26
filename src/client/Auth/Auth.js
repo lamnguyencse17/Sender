@@ -53,7 +53,7 @@ export default class Auth {
                 } else {
                   this.setSession(authResult, value.data);
                   this.userProfile = value.data;
-                  console.log(value.data)
+                  console.log(value.data);
                   if (!value.data.newUser) {
                     setTimeout(
                       () =>
@@ -66,8 +66,8 @@ export default class Auth {
                   } else {
                     this.history.push({
                       path: "/generation",
-                      state: {...value.data}
-                    })
+                      state: { ...value.data },
+                    });
                   }
                 }
               });

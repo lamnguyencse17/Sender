@@ -12,21 +12,22 @@ class ChatLog extends PureComponent {
   render() {
     // TODO: fix css
     let { log, participants, profile } = this.props;
+    let owner, message;
     return (
       <div className="chat-log">
-        {log != {} ? (
+        {log != {} ? ( // Check if it's empty chat
           Object.keys(log).map((index) => {
+            // for every message in log
+            owner = log[index].owner;
+            message = log[index].message;
             return (
               <Fragment key={index}>
-                {log[index].owner == profile.id ? (
-                  <Receiver owner={profile.name} message={log[index].message} />
-                ) : log[index].owner == "system" ? (
-                  <System owner={"system"} message={log[index].message} />
+                {owner == profile.id ? (
+                  <Receiver owner={profile.name} message={message} />
+                ) : owner == "system" ? (
+                  <System owner={"system"} message={message} />
                 ) : (
-                  <Sender
-                    owner={participants[log[index].owner].name}
-                    message={log[index].message}
-                  />
+                  <Sender owner={participants[owner].name} message={message} />
                 )}
               </Fragment>
             );
