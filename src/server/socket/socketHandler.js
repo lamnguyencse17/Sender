@@ -22,10 +22,11 @@ class socketHandler {
   setSocket = async (socket) => {
     this.socket = socket;
     this.id = socket.handshake.query["id"];
-    console.log(socket.handshake.query["id"]);
     addToSocketMap(socket.handshake.query["id"], socket.id);
     this.publicKey = await userModel.getPublicKey(this.id);
     console.log(`New client connected ${this.id}`);
+  };
+  syncData = async () => {
     let rooms = await roomModel.getSubscribedRoom(this.id);
     let subscribedRooms = {};
     rooms.forEach((room) => {
@@ -36,17 +37,17 @@ class socketHandler {
           participants: room.participants,
         },
       };
-      socket.join(room._id);
+      this.socket.join(room._id);
     });
     let encapsulated = await encapsulator(subscribedRooms, this.publicKey);
-    socket.emit("subscribed-to", encapsulated);
+    this.socket.emit("subscribed-to", encapsulated);
     rooms.forEach(async (room) => {
       if (room.messages.length != 0) {
         encapsulated = await encapsulator(
           lastMessages(room.messages, 5),
           this.publicKey
         );
-        socket.emit("sync-messages", encapsulated);
+        this.socket.emit("sync-messages", encapsulated);
       }
     });
   };

@@ -8,7 +8,8 @@
     "build": "babel -d ./build ./src/server/ -s",
     "docs": "jsdoc -c ./jsdoc.json",
     "fe": "webpack-dev-server --mode development",
-    "be": "nodemon --exec babel-node src/server/server.js --ignore 'src/client/*'"
+    "be": "nodemon --exec babel-node src/server/server.js --ignore 'src/client/*'",
+    "buildfe": "webpack -p"
   },
   "repository": {
     "type": "git",

@@ -39,6 +39,7 @@ io.on("connection", async (socket) => {
   socket.on("client-sending-message", (message) => {
     socketObj.onClientSendingMessage(message);
   });
+  socket.on("sync", () => socketObj.syncData());
   socket.on("disconnect", () => socketObj.onDisconnect());
   socket.on("error", (err) => socketObj.onError(err));
   socket.on("sending-file", (data) => socketObj.onClientSendingFile(data));

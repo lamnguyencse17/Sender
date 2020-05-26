@@ -58,6 +58,9 @@ class Messaging extends Component {
     this.socketObj.setSocket(this.socket);
   }
   componentDidMount() {
+    if (this.state.privateKeyAvailable) {
+      this.socket.emit("sync");
+    }
     this.socket.on("new-user", (data) => {
       let announcement = {
         id: 0,
@@ -212,6 +215,7 @@ class Messaging extends Component {
   closePrivateInput = () => {
     let privateKey = sessionStorage.getItem("privateKey");
     if (privateKey && validatePrivateKey(privateKey)) {
+      this.socket.emit("sync");
       this.setState({
         ...this.state,
         privateKeyAvailable: true,
