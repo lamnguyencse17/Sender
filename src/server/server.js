@@ -8,9 +8,9 @@ import path from "path";
 import socketHandler from "./socket/socketHandler";
 import checkJwt from "./helpers/checkJwt";
 import { setio } from "./socket/socketio";
+import compression from "compression";
 import morgan from "morgan";
 import forge from "node-forge";
-import userModel from "./models/users";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 mongoose.connect(process.env.DATA_URI, {
@@ -22,6 +22,7 @@ mongoose.connect(process.env.DATA_URI, {
 const SERVER_PORT = 3000;
 const app = express();
 app.use(cors());
+app.use(compression());
 app.use(morgan("tiny"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,7 +50,7 @@ io.on("connection", async (socket) => {
   });
 });
 
-server.listen(SERVER_PORT, async () => {
+server.listen(process.env.PORT || SERVER_PORT, async () => {
   console.log(`Server running on port ${SERVER_PORT}`);
 });
 
