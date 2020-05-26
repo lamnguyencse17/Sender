@@ -4,20 +4,21 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ParticipantsModal from "./Modals/ParticipantsModal";
-import ConfirmationLeaveModal from "./Modals/ConfirmationLeave"
-const options = ["Show Participants", "Leave room"];
+import ConfirmationLeaveModal from "./Modals/ConfirmationLeave";
+const options = ["Show Participants", "Leave Room", "Get Invite Link"];
 
 const ITEM_HEIGHT = 48;
 
 export default class LongMenu extends Component {
   constructor(props) {
     super(props);
-    console.log(this.props)
+    console.log(this.props);
     this.state = {
       anchor: null,
       selected: null,
       participantModal: false,
-      confirmationModal: false
+      confirmationModal: false,
+      getInviteLink: false,
     };
   }
   handleClick = (event) => {
@@ -30,8 +31,14 @@ export default class LongMenu extends Component {
     this.setState({ ...this.state, participantModal: false });
   };
   closeConfirmationLeave = () => {
-    this.setState({ ... this.state, confirmationModal: false})
-  }
+    this.setState({ ...this.state, confirmationModal: false });
+  };
+  handleCopy = () => {
+    navigator.clipboard.writeText(
+      `http://localhost:8080/invite/${this.props.roomId}`
+    );
+    this.setState({ anchor: null });
+  };
   render() {
     let { anchor } = this.state;
     return (
@@ -41,11 +48,12 @@ export default class LongMenu extends Component {
           closeModal={this.closeParticipantModal}
           participants={this.props.participants}
         />
-        <ConfirmationLeaveModal open={this.state.confirmationModal}
+        <ConfirmationLeaveModal
+          open={this.state.confirmationModal}
           closeModal={this.closeConfirmationLeave}
           roomId={this.props.roomId}
           updateOnUserLeave={this.props.updateOnUserLeave}
-          />
+        />
         <IconButton
           aria-label="more"
           aria-controls="long-menu"
@@ -78,11 +86,13 @@ export default class LongMenu extends Component {
                       selected: option,
                       participantModal: true,
                     })
-                  : this.setState({
-                    ...this.state,
-                    selected: option,
-                    confirmationModal: true,
-                  })
+                  : option == "Leave Room"
+                  ? this.setState({
+                      ...this.state,
+                      selected: option,
+                      confirmationModal: true,
+                    })
+                  : this.handleCopy()
               }
             >
               {option}
