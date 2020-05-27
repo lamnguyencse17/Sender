@@ -261,8 +261,7 @@ class Messaging extends Component {
               />
             </div>
             <div className="active-bar">
-              {Object.keys(roomList).length !== 0 &&
-              roomList.constructor === Object ? (
+              {roomList.constructor === Object ? (
                 <ActiveBar
                   room={Object.values(roomList).map((room) => room.title)}
                   setActiveTab={this.setActiveTab}

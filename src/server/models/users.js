@@ -15,6 +15,7 @@ export const userSchema = new Users({
 
 userSchema.statics.isRegistered = async function (user) {
   let result = {};
+  let isNew = false;
   result = await this.findOneAndUpdate(
     { email: user.email },
     {
@@ -24,14 +25,17 @@ userSchema.statics.isRegistered = async function (user) {
         gravatar: user.gravatar,
       }),
     },
-    { upsert: true, new: true, runValidators: true },
+    { upsert: true, passRawResult: true },
     (err, doc) => {
       if (err) {
         console.log("Something wrong when updating data!");
       }
+      if (!doc) {
+        isNew = true;
+      }
     }
   );
-  return { ...result._doc, newUser: result.isNew };
+  return { ...result._doc, newUser: isNew };
 };
 userSchema.statics.getName = async function (userId) {
   return await this.findOne({ _id: userId }).select("name -_id");

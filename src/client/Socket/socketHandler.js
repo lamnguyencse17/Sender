@@ -30,6 +30,12 @@ class socketHandler {
     /**
      * @type {string}
      */
+    if (Object.keys(rooms).length == 0) {
+      return {
+        defaultRoom: null,
+        newRoom: {},
+      };
+    }
     let defaultRoom = rooms[Object.keys(rooms)[0]].title;
     /**
      * @namespace

@@ -27,6 +27,11 @@ export default class Auth {
 
   handleAuthentication = async () => {
     this.auth0.parseHash((err, authResult) => {
+      if (err) {
+        console.log(err);
+        this.logout();
+        return;
+      }
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.auth0.client.userInfo(authResult.accessToken, (err, profile) => {
           if (profile) {
@@ -55,17 +60,14 @@ export default class Auth {
                   this.userProfile = value.data;
                   console.log(value.data);
                   if (!value.data.newUser) {
-                    setTimeout(
-                      () =>
-                        this.history.push({
-                          pathname: "/messaging",
-                          state: { ...value.data },
-                        }),
-                      1000
-                    );
-                  } else {
                     this.history.push({
-                      path: "/generation",
+                      pathname: "/messaging",
+                      state: { ...value.data },
+                    });
+                  } else {
+                    console.log("First Time?");
+                    this.history.push({
+                      pathname: "/generation",
                       state: { ...value.data },
                     });
                   }

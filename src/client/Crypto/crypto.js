@@ -1,6 +1,7 @@
 import forge from "node-forge";
 
 export const validatePrivateKey = (privateKey) => {
+  // rewrite as Promise
   try {
     forge.pki.privateKeyFromPem(privateKey);
   } catch (err) {

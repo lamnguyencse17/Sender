@@ -14,9 +14,9 @@ export const getio = () => {
   return io;
 };
 
-const getUsersInRoom = (room = '5eabfa02f209780629cd9dff') => {
+const getUsersInRoom = (room) => {
   return Object.keys(io.sockets.adapter.rooms[room].sockets);
-}
+};
 
 export const addToSocketMap = (userId, socketId) => {
   socketMap[userId] = socketId;
@@ -29,16 +29,16 @@ export const announceNewUser = (roomId, name) => {
     message: `${name} joined the room`,
     date: Date.now(),
   });
-  return res.status(200).json({ message: result.message });
 };
 
 export const broadcastToRoom = async (messageObj, room) => {
-  let sockets = getUsersInRoom()
-  let encapsulated, id
-  sockets.forEach(async (socket) => { // user: socket
+  let sockets = getUsersInRoom();
+  let encapsulated, id;
+  sockets.forEach(async (socket) => {
+    // user: socket
     Object.keys(socketMap).forEach(async (userId) => {
-      if (socketMap[userId] == socket){
-        let publicKey = await userModel.getPublicKey(userId)
+      if (socketMap[userId] == socket) {
+        let publicKey = await userModel.getPublicKey(userId);
         encapsulated = await encapsulator(
           {
             id: messageObj._id,
@@ -51,6 +51,6 @@ export const broadcastToRoom = async (messageObj, room) => {
         );
         io.to(socket).emit("incoming-message", encapsulated);
       }
-    })
-  })
+    });
+  });
 };

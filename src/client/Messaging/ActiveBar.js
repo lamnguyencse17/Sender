@@ -26,13 +26,12 @@ class ActiveBar extends Component {
     if (this.state.addNewRoom != nextStates.addNewRoom) {
       return true;
     }
-    if (nextProps.room.sort().toString() == this.state.room.sort().toString()) {
+    if (nextProps.room == this.state.room) {
       return false;
     }
     return true;
   }
   toggleNewRoomModal = () => {
-    console.log(this.state);
     this.setState({ ...this.state, addNewRoom: !this.state.addNewRoom });
   };
   render() {
@@ -43,24 +42,30 @@ class ActiveBar extends Component {
           closeModal={this.toggleNewRoomModal}
           addNewRoom={this.props.addNewRoom}
         />
-        <Tabs
-          orientation="vertical"
-          variant="scrollable"
-          value={this.state.value}
-          onChange={this.handleChange}
-          aria-label="Vertical tabs example"
-        >
-          {this.props.room.map((value) => {
-            return (
-              <Tab
-                key={value}
-                label={value}
-                id={`vertical-tab-${value}`}
-                aria-controls={`vertical-tabpanel-${value}`}
-              />
-            );
-          })}
-        </Tabs>
+        {Object.keys(this.props.room).length > 0 ? (
+          <>
+            <Tabs
+              orientation="vertical"
+              variant="scrollable"
+              value={this.state.value}
+              onChange={this.handleChange}
+              aria-label="Vertical tabs example"
+            >
+              {this.props.room.map((value) => {
+                return (
+                  <Tab
+                    key={value}
+                    label={value}
+                    id={`vertical-tab-${value}`}
+                    aria-controls={`vertical-tabpanel-${value}`}
+                  />
+                );
+              })}
+            </Tabs>
+          </>
+        ) : (
+          <></>
+        )}
         <IconButton onClick={this.toggleNewRoomModal}>
           <AddCircleIcon />
         </IconButton>

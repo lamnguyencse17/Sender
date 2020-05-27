@@ -8,13 +8,17 @@ class MessageAreaContainer extends Component {
     let { activeTab, roomList, profile } = this.props;
     let participants, log, roomId;
     if (activeTab) {
+      roomId = Object.keys(roomList).filter(
+        (id) => roomList[id].title == activeTab
+      )[0];
       let targetRoom =
         roomList[
-          Object.keys(roomList).filter((id) => roomList[id].title == activeTab)
+          Object.keys(roomList).filter(
+            (id) => roomList[id].title == activeTab
+          )[0]
         ];
       participants = targetRoom.participants;
       log = targetRoom.messages;
-      roomId = targetRoom[0];
     }
     return (
       <>
