@@ -130,7 +130,6 @@ class Messaging extends Component {
       data = decapsulator(data);
       // change to use room public key by using default
       // data: {id, message, owner, room}
-
       let { id, message, owner, room, date } = data;
       let target = null;
       for (let room in this.state.roomList) {

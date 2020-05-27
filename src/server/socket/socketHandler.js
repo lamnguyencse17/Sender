@@ -110,7 +110,7 @@ class socketHandler {
             date: product.date,
             room: product.room,
           },
-          this.id
+          product.room
         );
       }
     });
