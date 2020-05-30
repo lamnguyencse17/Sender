@@ -14,7 +14,7 @@ import {
 } from "../Crypto/crypto";
 import PrivateInput from "./PrivateInput";
 
-const ENDPOINT = "http://localhost:3000";
+const ENDPOINT = "https://sender-backend.herokuapp.com/";
 class Messaging extends Component {
   constructor(props) {
     super(props);
