@@ -32,7 +32,7 @@ export const announceNewUser = (roomId, name) => {
 };
 
 export const broadcastToRoom = async (messageObj, room) => {
-  let sockets = getUsersInRoom(room);
+  let sockets = await getUsersInRoom(room);
   let encapsulated, id;
   sockets.forEach(async (socket) => {
     // user: socket

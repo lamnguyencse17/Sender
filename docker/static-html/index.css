@@ -1,0 +1,220 @@
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+#root {
+  height: 100%;
+}
+.body {
+  height: 90%;
+  margin: 0;
+  font-family: sans-serif;
+  background-image: url("bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.header {
+  clear: both;
+  height: 10%;
+  margin: 0;
+  background: #f8c260;
+}
+.header .logo {
+  height: 100%;
+  width: auto;
+  float: left;
+  margin-left: 2%;
+}
+.logo-text {
+  margin-top: 20%;
+  margin-bottom: 20%;
+}
+.logo-text a {
+  font-family: "Baloo Tamma 2", cursive;
+  font-size: 1.5rem;
+  color: #373934;
+
+  text-decoration: none;
+}
+
+.impressive-message {
+  color: #fff;
+  position: absolute;
+  top: 35%;
+  left: 15%;
+  font-size: 2.5rem;
+  font-family: "Baloo Tamma 2", cursive;
+}
+
+.impressive-message button {
+  border-radius: 2rem;
+  background-color: #f8c260;
+  border: none;
+  color: #fdf4e3;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  width: 9rem;
+  height: 2.5rem;
+}
+
+.impressive-message button:hover {
+  background-color: #373934;
+  color: white;
+}
+
+.messaging-div {
+  background-color: #fdf4e3;
+  height: 90%;
+}
+
+.active-bar {
+  float: left;
+  background-color: #fff;
+  height: 100%;
+  width: 15%;
+  overflow: auto;
+}
+
+.message-area {
+  float: right;
+  height: 100%;
+  width: 85%;
+}
+
+.text-area {
+  position: absolute;
+  top: 91%;
+  margin: 0% 2% 0% 2%;
+  width: 80%;
+}
+
+.chat-log {
+  height: 75%;
+  margin: 2%;
+  flex-flow: column wrap;
+  overflow-y: scroll;
+  border-style: solid;
+  border-color: black;
+}
+
+.chat-widget {
+  height: 10%;
+  border: 0.05rem;
+  border-style: solid;
+}
+
+.chat-message-sender {
+  font-family: "Baloo Tamma 2", cursive;
+  font-size: 2rem;
+  border-radius: 1rem;
+  padding-left: 1%;
+  padding-right: 2%;
+  margin-right: 20%;
+  height: auto;
+  align-self: flex-start;
+  background-color: #f8c260;
+  color: #373934;
+  margin-bottom: 1%;
+  width: fit-content;
+}
+
+.chat-message-sender .owner {
+  font-family: "Baloo Tamma 2", cursive;
+  color: #757575;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.chat-message-recipient {
+  font-family: "Baloo Tamma 2", cursive;
+  color: #373934;
+  font-size: 2rem;
+  border-radius: 1rem;
+  padding-left: 1%;
+  padding-right: 2%;
+  margin-left: 20%;
+  height: auto;
+  margin-bottom: 1rem;
+  align-self: flex-end;
+  background-color: #fff;
+  margin-bottom: 1%;
+  width: fit-content;
+}
+
+.chat-message-recipient .owner {
+  font-family: "Baloo Tamma 2", cursive;
+  color: #757575;
+  font-size: 1rem;
+  text-align: right;
+}
+
+nav {
+  float: right;
+  height: 100%;
+}
+ul {
+  margin: 0;
+  height: 100%;
+}
+ul li {
+  display: inline-block;
+  padding-right: 2rem;
+  padding-bottom: 15%;
+  padding-top: 15%;
+}
+
+ul li a {
+  font-family: "Baloo Tamma 2", cursive;
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: #373934;
+}
+
+.chat-header {
+  height: 7%;
+  background-color: #757575;
+}
+
+.chat-header p {
+  margin: 0;
+  font-size: 2rem;
+  position: relative;
+  text-align: center;
+  font-family: "Baloo Tamma 2", cursive;
+  display: flex;
+  float: left;
+  padding-left: 40%;
+  color: white;
+}
+
+.chat-header .options {
+  display: flex;
+  float: right;
+  padding-right: 1rem;
+}
+
+.chat-message-system {
+  font-family: "Baloo Tamma 2", cursive;
+  color: #373934;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.modal-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+}
+
+.text-field {
+  width: 95%;
+  float: left;
+}

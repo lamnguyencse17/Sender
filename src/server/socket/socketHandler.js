@@ -66,13 +66,14 @@ class socketHandler {
     );
     fileObj.data = result;
     fileObj.name = path.parse(fileObj.name).name;
+    fileObj.name.replace(/\s/g, "");
     writeToGridFS(fileObj).then(async (result, err) => {
       if (err) {
         console.log(err);
       } else {
         let { name } = await userModel.getName(fileObj.owner);
         let newMessage = new messageModel({
-          message: `${name} share a file at: http://localhost:8080/file/${fileObj.name}`,
+          message: `${name} share a file at: https://sender-lamnguyen.herokuapp.com/file/${fileObj.name}`,
           owner: mongoose.Types.ObjectId(fileObj.owner),
           room: mongoose.Types.ObjectId(fileObj.room),
           date: fileObj.date,

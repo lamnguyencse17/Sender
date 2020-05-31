@@ -37,7 +37,7 @@ export default class Auth {
           if (profile) {
             axios
               .post(
-                `${process.env.AUTH0_AUDIENCE}/api/protected/authenticate`,
+                `${process.env.AUTH0_AUDIENCE}api/protected/authenticate`,
                 {
                   email: profile.email,
                   name: profile.name,
