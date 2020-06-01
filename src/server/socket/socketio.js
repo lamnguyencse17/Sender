@@ -15,6 +15,7 @@ export const getio = () => {
 };
 
 const getUsersInRoom = (room) => {
+  console.log(Object.keys(io.sockets.adapter.rooms[room].sockets));
   return Object.keys(io.sockets.adapter.rooms[room].sockets);
 };
 
@@ -32,6 +33,7 @@ export const announceNewUser = (roomId, name) => {
 };
 
 export const broadcastToRoom = async (messageObj, room) => {
+  console.log(room);
   let sockets = await getUsersInRoom(room);
   let encapsulated, id;
   sockets.forEach(async (socket) => {

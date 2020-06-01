@@ -26,7 +26,7 @@ export default class File extends PureComponent {
     });
     axios
       .get(
-        `${process.env.AUTH0_AUDIENCE}/api/protected/file/${this.props.match.params.filename}`,
+        `${process.env.AUTH0_AUDIENCE}api/protected/file/${this.props.match.params.filename}`,
         {
           headers: {
             "Content-Type": "application/json",
