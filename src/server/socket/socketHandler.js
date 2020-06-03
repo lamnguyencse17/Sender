@@ -83,7 +83,7 @@ class socketHandler {
             console.log(err);
             return;
           } else {
-            broadcastToRoom(product);
+            broadcastToRoom(product, fileObj.room);
           }
         });
       }
