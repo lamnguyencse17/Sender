@@ -24,7 +24,7 @@
   "dependencies": {
     "@babel/runtime": "^7.9.6",
     "auth0-js": "^9.13.2",
-    "auth0-lock": "^11.24.1",
+    "auth0-lock": "^11.26.0",
     "axios": "^0.19.2",
     "babel-plugin-module-resolver": "^4.0.0",
     "better-docs": "^2.0.1",
